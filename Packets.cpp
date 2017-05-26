@@ -15,5 +15,5 @@ void writeInt(Stream& st, uint32 in) {
 }
 
 void writeString(Stream& st, String& s) {
-	st.write(s.c_str());
+	st.write(s.c_str(), s.length()+1);
 }

@@ -18,6 +18,7 @@ struct GamePacket
 	virtual bool writeToStream(Stream& st) {
 		st.write(uint8(TYPE));
 		this->writeToStreamInternal(st);
+		st.flush();
 	}
 	virtual bool writeToStreamInternal(Stream & st) = 0;
 };
@@ -78,8 +79,14 @@ struct ServerGameStartPacket : GamePacket<PACKET_SSTART>
 	}
 	bool readFromStream(Stream& st) {
 		gameround = readUInt32(st);
+		Serial.print("gameround:");
+		Serial.println(gameround);
 		text = st.readString();
+		Serial.print("text:");
+		Serial.println(text);
 		led1 = readUInt32(st);
+		Serial.print("led1:");
+		Serial.println(led1);
 		led2 = readUInt32(st);
 		led3 = readUInt32(st);
 		led4 = readUInt32(st);

@@ -25,6 +25,8 @@ void GameServerProxy::doWork() {
 			case PACKET_SSTART: {
 				ServerGameStartPacket p;
 				p.readFromStream(client);
+				Serial.print("got start:");
+				Serial.println(p.text);
 				ui->handleGameStart(&p);
 				break;
 			}
