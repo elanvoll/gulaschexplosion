@@ -7,7 +7,8 @@
 
 #include <HardwareSerial.h>
 
-int readInt(Stream& st);
+uint32 readUInt32(Stream& st);
+
 void writeInt(Stream& st, uint32 in);
 void writeString(Stream& st, String& s);
 
@@ -58,8 +59,8 @@ struct ServerJoinAckPacket : GamePacket<PACKET_SJOIN>
 	}
 	
 	bool readFromStream(Stream& st) {
-		this->playerId = st.read();
-		Serial.printf("ServerJoinAckPacket - read userid %d", playerId);
+		st.readBytes(&playerId, 1);
+		Serial.printf("ServerJoinAckPacket - read userid %d\n", playerId);
 	}
 	bool writeToStreamInternal(Stream& st) {
 		st.write(playerId);
@@ -77,13 +78,13 @@ struct ServerGameStartPacket : GamePacket<PACKET_SSTART>
 
 	}
 	bool readFromStream(Stream& st) {
-		gameround = readInt(st);
+		gameround = readUInt32(st);
 		text = st.readString();
-		led1 = readInt(st);
-		led2 = readInt(st);
-		led3 = readInt(st);
-		led4 = readInt(st);
-		timeoutseconds = readInt(st);
+		led1 = readUInt32(st);
+		led2 = readUInt32(st);
+		led3 = readUInt32(st);
+		led4 = readUInt32(st);
+		timeoutseconds = readUInt32(st);
 	}
 	bool writeToStreamInternal(Stream& st) {
 		writeInt(st, gameround);
@@ -110,9 +111,9 @@ struct ServerClientActionLogPacket : GamePacket<PACKET_SLOGACT>
 
 	}
 	bool readFromStream(Stream& st) {
-		stickdir = st.read();
-		deviceorientation = st.read();
-		playerid = st.read();
+		st.readBytes((char*)&stickdir, 1);
+		st.readBytes((char*)&deviceorientation, 1);
+		st.readBytes((char*)&playerid, 1);
 	}
 	bool writeToStreamInternal(Stream& st) {
 		st.write(stickdir);
@@ -134,8 +135,8 @@ struct ClientActionPacket : GamePacket<PACKET_CACTION> {
 
 	}
 	bool readFromStream(Stream& st) {
-		stickdir = st.read();
-		deviceorientation = st.read();
+		st.readBytes((char*)&stickdir, 1);
+		st.readBytes((char*)&deviceorientation, 1);
 	}
 	bool writeToStreamInternal(Stream& st) {
 		st.write(stickdir);

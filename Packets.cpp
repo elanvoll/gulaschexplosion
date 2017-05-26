@@ -1,12 +1,8 @@
 #include "Packets.h"
 
-int readInt(Stream& st) {
-	int r = 0;
-	for(int i=0; i<4;++i) {
-		r <<= 8;
-		r |= char(st.read());
-	}
-	return r;
+uint32 readUInt32(Stream& st) {
+	uint32 ret;
+	st.readBytes((char*)&ret, 4);
 }
 
 
