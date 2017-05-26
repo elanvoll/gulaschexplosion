@@ -93,3 +93,8 @@ void GameUI::doTime() {
     dirty = true;
   }
 }
+
+void GameUI::handleGameOver(SeverGameOver* packet) {
+  // TODO: implement me!
+}
+

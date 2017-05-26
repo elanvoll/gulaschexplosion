@@ -3,6 +3,9 @@
 
 #define _INC_DEFINES_H
 
+#define TIMEOUT_PROP_DELAY_MS 500
+
+
 #define BLACK   0x0000
 #define BLUE    0x001F
 #define RED     0xF800

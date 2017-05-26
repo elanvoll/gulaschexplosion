@@ -39,6 +39,22 @@ void GameServer::doWork() {
 			}
 		}
 	}
+
+	if (timeoutms != 0 && timeoutms < millis()) {
+		timeoutms = 0;
+		ServerClientActionLogPacket* p = &*correctSequence.begin();
+		SeverGameOver gov(true, p->playerId, p->stickdir, p->deviceorientation);
+
+		ui->handleGameOver(&gov);
+		broadcast(&gov);
+		server.close();
+	}
+}
+
+void GameServer::broadcast(BasePacket *p) {
+	for(std::list<WiFiClient>::iterator itr = currentClients.begin(); itr!= currentClients.end(); ++itr) {
+		p->writeToStream(*itr);
+	}
 }
 
 void GameServer::begin() {
@@ -56,8 +72,8 @@ GameRound* GameServer::generateGameRound() {
 	instructions.push_back(ServerGameStartPacket(1, "One player has to select green", 0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
 	instructions.push_back(ServerGameStartPacket(1, "If there is red, select it first", 0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
 	// richtig: player 1 geht zu led1 = oben
-	std::list<ClientActionPacket> correctSeq;
-	correctSeq.push_back(ClientActionPacket(STICK_DIR_UP, 0));
+	std::list<ServerClientActionLogPacket> correctSeq;
+	correctSeq.push_back(ServerClientActionLogPacket(STICK_DIR_UP, 0, 1));
 
 	switch(currentRound) {
 		case 1:
@@ -71,7 +87,11 @@ void GameServer::startGame() {
 	GameRound* r = generateGameRound();
 	Serial.println("host clicked start");
 
+	this->correctSequence = r->correctSeq;
+
 	std::list<ServerGameStartPacket>::iterator instrItr = r->instructions.begin();
+
+	this->timeoutms = instrItr->timeoutseconds*1000 + TIMEOUT_PROP_DELAY_MS + millis();
 	// user0 gets special treatment
 	ui->handleGameStart(&*instrItr);
 

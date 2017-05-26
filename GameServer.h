@@ -18,11 +18,14 @@ public:
   void begin();
   void doWork();
 private:
+  void broadcast(BasePacket* p);
   GameRound* generateGameRound();
   void handleClientInteraction(ClientActionPacket& p, uint8 userid);
   void startGame();
   WiFiServer server;
   std::list<WiFiClient> currentClients;
+  std::list<ServerClientActionLogPacket> correctSequence;
   int currentRound = 1;
+  uint32 timeoutms = 0;
 };
 #endif

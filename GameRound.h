@@ -21,13 +21,13 @@ class UserAction
 class GameRound
 {
 public:
-	GameRound(std::list<ServerGameStartPacket> instructions, std::list<ClientActionPacket> correctSeq)
+	GameRound(std::list<ServerGameStartPacket> instructions, std::list<ServerClientActionLogPacket> correctSeq)
 		: instructions(instructions), correctSeq(correctSeq) {
 
 	}
 	std::list<ServerGameStartPacket> instructions;
 
-	std::list<ClientActionPacket> correctSeq;
+	std::list<ServerClientActionLogPacket> correctSeq;
 };
 
 #endif
