@@ -19,6 +19,7 @@ Badge badge;
 WindowSystem* ui = new WindowSystem(&tft);
 Menu * mainMenu = new Menu();
 GameOverlay * status = new GameOverlay(GAME_STATE_MAIN_MENU);
+uint8 state = 0;
 
 
 int8 player_id = -1;
@@ -84,19 +85,23 @@ void setup() {
   f.println(APP_NAME);
 
   mainMenu->addMenuItem(new MenuItem("Host game", []() {
+    status->updateGameState(GAME_STATE_SHARING_ACCESS);    
     hostgame();
-		ClosableTextDisplay* host_screen = new ClosableTextDisplay();
-		host_screen->setText(STATE_HOST_MESSAGE);
-		host_screen->setOnClose([]() {
+    ClosableTextDisplay* host_screen = new ClosableTextDisplay();
+    host_screen->setText(STATE_HOST_MESSAGE);
+    host_screen->setOnClose([]() {
+      status->updateGameState(GAME_STATE_MAIN_MENU);
       ui->closeCurrent();
     });
     ui->open(host_screen);
   }));
 
   mainMenu->addMenuItem(new MenuItem("Join game", []() {
+		status->updateGameState(GAME_STATE_RECEIVING_ACCESS);
 		ClosableTextDisplay* join_screen = new ClosableTextDisplay();
 		join_screen->setText(STATE_JOIN_MESSAGE);
 		join_screen->setOnClose([]() {
+			status->updateGameState(GAME_STATE_MAIN_MENU);
       ui->closeCurrent();
     });
     ui->open(join_screen);
@@ -109,6 +114,16 @@ void setup() {
 }
 
 void loop() {
+	switch(status->getGameState()) {
+		case GAME_STATE_SHARING_ACCESS:
+			// do IR Send
+			Serial.println("send ir");
+			break;
+		case GAME_STATE_RECEIVING_ACCESS:
+			// do IR recieve
+			Serial.println("recieve ir");
+			break;
+	}
 	ui->dispatchInput(badge.getJoystickState());
 	ui->draw();
 }

@@ -1,9 +1,9 @@
 #include <BadgeUI.h>
-
+#include "defines.h"
 
 class GameOverlay: public Overlay {
 public:
-  GameOverlay(uint16_t gameState): gameState(gameState) {}
+  GameOverlay(game_state_t gameState): gameState(gameState) {}
   bool isDirty() {
     return dirty;
   }
@@ -11,17 +11,20 @@ public:
   bool isValid() {
     return true;
   }
-  void updateGameState(uint16_t gameState) {
+  void updateGameState(game_state_t gameState) {
     if(this->gameState == gameState) {
       return;
     }
     this->gameState = gameState;
     this->dirty = true;
   }
+  game_state_t getGameState() {
+    return this->gameState;
+  }
 
   uint16_t getOffsetX();
   uint16_t getOffsetY();
 private:
-  uint16_t gameState;
+  game_state_t gameState;
   bool dirty = true;
 };
