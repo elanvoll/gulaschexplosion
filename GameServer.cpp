@@ -16,6 +16,7 @@ void GameServer::doWork() {
 		ServerJoinAckPacket p;
 		p.playerId = playerid;
 		p.writeToStream(currentClient);
+		ui->serverNewUser(playerid);
 	}
 	// TODO: clients might connect in invalid states!
 	// TODO: clients might disconnect
@@ -39,11 +40,12 @@ void GameServer::doWork() {
 }
 
 void GameServer::begin() {
+	ui->setOnGameStart(std::bind(&GameServer::startGame, this));
 	server.begin();
 	ServerJoinAckPacket p;
 	p.playerId = 0;
 	ui->handleJoin(&p);
-	ui->setOnGameStart(std::bind(&GameServer::startGame, this));
+	ui->serverNewUser(0);
 }
 
 GameRound* GameServer::generateGameRound() {
@@ -66,6 +68,8 @@ void GameServer::startGame() {
 	// broadcast, including user0
 	// set timer
 	GameRound* r = generateGameRound();
+
+
 	//ServerGameStartPacket
 }
 
