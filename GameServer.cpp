@@ -1,5 +1,6 @@
 #include "GameServer.h"
 
+#include "defines.h"
 
 void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 	// TODO
@@ -45,10 +46,27 @@ void GameServer::begin() {
 	ui->setOnGameStart(std::bind(&GameServer::startGame, this));
 }
 
+GameRound* GameServer::generateGameRound() {
+	std::list<ServerGameStartPacket> instructions;
+	instructions.push_back(ServerGameStartPacket(1, "Player 2 must not press any button", 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
+	instructions.push_back(ServerGameStartPacket(1, "A player has to select green", 0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
+	instructions.push_back(ServerGameStartPacket(1, "If there is red, select it first", 0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
+	// richtig: player 1 geht zu led1 = oben
+	std::list<ClientActionPacket> correctSeq;
+	correctSeq.push_back(ClientActionPacket(STICK_DIR_UP, 0));
+
+	switch(currentRound) {
+		case 1:
+		return new GameRound(instructions, correctSeq);
+	}
+}
+
 void GameServer::startGame() {
 	//CRITICAL: packets
 	// broadcast, including user0
 	// set timer
+	GameRound* r = generateGameRound();
+	//ServerGameStartPacket
 }
 
 GameServer::~GameServer() {

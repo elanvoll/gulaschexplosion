@@ -18,14 +18,14 @@ future idea: pulsing vibration as indicator ("press if player x' device morses S
 
 Flow example:
  ServerJoinAckPacket(playerid = 2 [Range: 1..3?5?])
- ServerGameStartPacket(round, text = "player 3 shall press left", led0 = 0xffffffff, led1, led2, led3, timeoutseconds - delta)
+ ServerGameStartPacket(gameround, text = "player 3 shall press left", led1 = 0xffffffff, led2, led3, led4, timeoutseconds - delta)
  ClientActionPacket(stickdir = 2, device orientation)
  ServerClientActionLogPacket(playerid, stickdir, deviceorientation)
   Unterscheidung:
    SeverGameOver(timeout true/false, correctplayerid, correctstickdir, correctdeviceor)
   Oder
    SeverGameSuccess!()
-  Host klickt auf next round:
+  Host klickt auf next gameround:
    ServerGameStartPacket wieder
 */
 
@@ -40,7 +40,10 @@ enum packet_types_t
 };
 
 struct ServerJoinAckPacket : GamePacket
-{
+{	
+	ServerJoinAckPacket() {
+
+	}
 	
 	bool readFromStream(Stream& st);
 	bool writeToStream(Stream& st);
@@ -48,21 +51,31 @@ struct ServerJoinAckPacket : GamePacket
 };
 
 struct ServerGameStartPacket : GamePacket
-{
+{	
+	ServerGameStartPacket() {
+
+	}
+	ServerGameStartPacket(int gameround, String text, uint32 led1, uint32 led2, uint32 led3, uint32 led4, uint32 timeoutseconds) : 
+	gameround(gameround), text(text), led1(led1), led2(led2), led3(led3), led4(led4), timeoutseconds(timeoutseconds) {
+
+	}
 	bool readFromStream(Stream& st);
 	bool writeToStream(Stream& st);
 	
-	int round;
+	int gameround;
 	String text;
-	int led0;
-	int led1;
-	int led2;
-	int led3;
-	int timeoutseconds;
+	uint32 led1;
+	uint32 led2;
+	uint32 led3;
+	uint32 led4;
+	uint32 timeoutseconds;
 };
 
 struct ServerClientActionLogPacket : GamePacket
-{
+{	
+	ServerClientActionLogPacket() {
+
+	}
 	bool readFromStream(Stream& st);
 	bool writeToStream(Stream& st);
 	int stickdir;
@@ -71,6 +84,14 @@ struct ServerClientActionLogPacket : GamePacket
 };
 
 struct ClientActionPacket : GamePacket {
+	ClientActionPacket(uint8 stickdir, uint8 deviceorientation) :
+		stickdir(stickdir), deviceorientation(deviceorientation) {
+
+	}
+
+	ClientActionPacket(): stickdir(0), deviceorientation(0) {
+
+	}
 	bool readFromStream(Stream& st);
 	bool writeToStream(Stream& st);
 	uint8 stickdir;

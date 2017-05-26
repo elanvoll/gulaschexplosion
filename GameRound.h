@@ -14,9 +14,6 @@ enum deviceorientation
 
 class UserAction
 {
-public:
-	UserAction();
-	~UserAction();
 	JoystickState joystick;
 
 };
@@ -24,10 +21,13 @@ public:
 class GameRound
 {
 public:
-	GameRound();
-	~GameRound();
-	
+	GameRound(std::list<ServerGameStartPacket> instructions, std::list<ClientActionPacket> correctSeq)
+		: instructions(instructions), correctSeq(correctSeq) {
 
+	}
+	std::list<ServerGameStartPacket> instructions;
+
+	std::list<ClientActionPacket> correctSeq;
 };
 
 #endif

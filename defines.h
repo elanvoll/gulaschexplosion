@@ -34,4 +34,9 @@ enum game_state_t {
 
 #define HOST_IP IPAddress(10, 0, 0, 1)
 
+#define STICK_DIR_UP 1
+#define STICK_DIR_LEFT 2
+#define STICK_DIR_DOWN 3
+#define STICK_DIR_RIGHT 4
+
 #endif

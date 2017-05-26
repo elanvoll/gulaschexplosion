@@ -7,7 +7,7 @@
 #include <list>
 
 #include "AbstractGameServer.h"
-
+#include "GameRound.h"
 // actual gameserver. runs on host only
 
 class GameServer : public AbstractGameServer {
@@ -18,9 +18,11 @@ public:
   void begin();
   void doWork();
 private:
+  GameRound* generateGameRound();
   void handleClientInteraction(ClientActionPacket& p, uint8 userid);
   void startGame();
   WiFiServer server;
   std::list<WiFiClient> currentClients;
+  int currentRound = 1;
 };
 #endif

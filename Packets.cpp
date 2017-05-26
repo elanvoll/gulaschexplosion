@@ -19,12 +19,12 @@ bool ServerJoinAckPacket::writeToStream(Stream& st) {
 
 
 bool ServerGameStartPacket::readFromStream(Stream& st) {
-	round = readInt(st);
+	gameround = readInt(st);
 	text = st.readString();
-	led0 = readInt(st);
 	led1 = readInt(st);
 	led2 = readInt(st);
 	led3 = readInt(st);
+	led4 = readInt(st);
 	timeoutseconds = readInt(st);
 }
 
