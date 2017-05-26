@@ -223,6 +223,7 @@ void receiveGameInformation() {
 			String ssid = received.substring(0, firstTab);
 			String psk = received.substring(firstTab + 1, secondTab);
 			String version = received.substring(secondTab + 1, received.length() - 1);
+      version.trim();
 
 			Serial.println("SSID: " + ssid);
 			Serial.println("PSK: " + psk);
