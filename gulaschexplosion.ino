@@ -232,14 +232,58 @@ void receiveGameInformation() {
 			if (strcmp(version.c_str(), APP_VERSION) != 0) {
 				showVersionErrorScreen(version);
 			} else {
-				Serial.println("Verison match");
-				status->updateGameState(GAME_STATE_MAIN_MENU);
-				ui->closeCurrent();
+				connectToWifi(ssid, psk);
 			}
 		}
 	}
 	badge.setGPIO(IR_EN, LOW);
 	Serial.println("Exiting receive mode");
+}
+
+void connectToWifi(String ssid, String psk) {
+	WiFi.begin(ssid.c_str(), psk.c_str()); // quick fix.. chnage in js
+  Serial.printf("Trying connect to %s...\n", ssid.c_str());
+  int wStat = WiFi.status();
+  int ledVal = 0;
+  bool up = true;
+  while (wStat != WL_CONNECTED) {
+    if (wStat == WL_CONNECT_FAILED) {
+      break;
+    }
+    pixels.setPixelColor(1, pixels.Color(ledVal, 0, ledVal));
+    pixels.setPixelColor(2, pixels.Color(0, ledVal, ledVal));
+    pixels.setPixelColor(3, pixels.Color(ledVal, ledVal, ledVal));
+    pixels.setPixelColor(0, pixels.Color(0, 0, ledVal));
+    pixels.show();
+    if (ledVal == 100) {
+      up = false;
+    }
+    if (ledVal == 0) {
+      up = true;
+    }
+    if (up) {
+      ledVal++;
+    } else {
+      ledVal--;
+    }
+    delay(10);
+    wStat = WiFi.status();
+    Serial.printf("Wstat: %d\n", wStat);
+  }
+  pixels.setPixelColor(1, pixels.Color(0, 0, 0));
+  pixels.setPixelColor(2, pixels.Color(0, 0, 0));
+  pixels.setPixelColor(3, pixels.Color(0, 0, 0));
+  pixels.setPixelColor(0, pixels.Color(0, 0, 0));
+  pixels.show();
+  if (wStat == WL_CONNECTED) {
+    Serial.println("Success");
+		Serial.println("IP: " + WiFi.localIP().toString());
+  } else {
+    Serial.println("Fail");
+  }
+	Serial.println("Verison match");
+	status->updateGameState(GAME_STATE_MAIN_MENU);
+	ui->closeCurrent();
 }
 
 void showVersionErrorScreen(String version) {
