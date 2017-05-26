@@ -9,23 +9,16 @@
 #include "rboot.h"
 #include "rboot-api.h"
 
+#include <stdint.h>
 
-#define BLACK   0x0000
-#define BLUE    0x001F
-#define RED     0xF800
-#define GREEN   0x07E0
-#define CYAN    0x07FF
-#define MAGENTA 0xF81F
-#define YELLOW  0xFFE0
-#define WHITE   0xFFFF
+#include "GameOverlay.h"
 
-#define APP_NAME "Gulaschexplosion v0.1"
-
-
+#include "defines.h"
 
 Badge badge;
 WindowSystem* ui = new WindowSystem(&tft);
 Menu * mainMenu = new Menu();
+GameOverlay * status = new GameOverlay(GAME_STATE_MAIN_MENU);
 
 void setup() {
 	badge.init();
@@ -37,7 +30,7 @@ void setup() {
 
   badge.setBacklight(true);
   ui->root->setSub(APP_NAME);
-  //ui->setOverlay(status);
+  ui->setOverlay(status);
   ui->draw();
 
   badge.setGPIO(IR_EN, LOW);
