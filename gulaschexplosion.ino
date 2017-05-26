@@ -100,9 +100,8 @@ void setup() {
 
   mainMenu->addMenuItem(new MenuItem("Dumnmy game", []() {
     gameUi = new GameUI(status);
-    gameUi->updateGameState(GAME_STATE_RUNNING);
     ui->open(gameUi);
-    ServerGameStartPacket s = ServerGameStartPacket(1, "Player 2 must not press any button", 0xFFFFFF00, 0xFFFF00FF, 0xFF00FFFF, 0xFFFFFFFF, 20);
+    ServerGameStartPacket s = ServerGameStartPacket(1, "Player 2 must not press any button", 0x222222, 0x44004400, 0x55550000, 0x22222222, 20);
     gameUi->handleGameStart(&s);
   }));
   ui->open(mainMenu);
@@ -111,6 +110,9 @@ void setup() {
 void loop() {
 	ui->dispatchInput(badge.getJoystickState());
 	ui->draw();
+  if (gameUi != NULL) {
+    gameUi->doTime();
+  }
 	switch(status->getGameState()) {
 		case GAME_STATE_RECEIVING_ACCESS:
 			receiveGameInformation();

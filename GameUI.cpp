@@ -43,6 +43,12 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
     tft->setTextSize(1);
     tft->setCursor(5, 30);
     tft->print(message);
+    if (statusOverlay->getGameState() == GAME_STATE_RUNNING) {
+      tft->setCursor(5, 90);
+      char time[10];
+      sprintf(time, "%.3f s", remainingTime / 1000.);
+      tft->print(time);
+    }
     this->dirty = false;
 }
 
@@ -69,4 +75,21 @@ void GameUI::handleGameStart(ServerGameStartPacket* packet) {
   setLED(2, packet->led3);
   setLED(3, packet->led4);
   pixels.show();
+  remainingTime = packet->timeoutseconds * 1000;
+}
+
+void GameUI::doTime() {
+  unsigned long last = lastTime;
+  lastTime = millis();
+  if (last == 0) {
+    return;
+  }
+  unsigned long diff = lastTime - last;
+  if (remainingTime > 0 && remainingTime > diff) {
+    remainingTime = remainingTime - diff;
+    dirty = true;
+  } else if (remainingTime > 0) {
+    remainingTime = 0;
+    dirty = true;
+  }
 }

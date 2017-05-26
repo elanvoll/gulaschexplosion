@@ -84,9 +84,12 @@ public:
   void handleJoin(ServerJoinAckPacket* packet);
   void handleGameStart(ServerGameStartPacket* packet);
 
+  void doTime();
 
 private:
   String lastPacketMessage;
+  unsigned long lastTime = 0;
+  uint32_t remainingTime = 0;
 
   GameOverlay* statusOverlay;
   uint8_t player;
