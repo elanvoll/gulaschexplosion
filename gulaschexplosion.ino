@@ -46,7 +46,7 @@ void hostgame() {
 	sprintf(ssid, "ESP%d", ESP.getChipId());
 	WiFi.softAP(ssid, randpw);
 	char buffer[41];
-	sprintf(buffer, "%s\t%s", ssid, randpw);
+	sprintf(buffer, "%s\t%s\n", ssid, randpw);
 	shareString = String(buffer);
 }
 
@@ -174,29 +174,13 @@ void loop() {
 
 	        char * buf = reinterpret_cast<char*>(&results.value);
 
-	        if (millis() - on_time > 500) {
-	          pixels.setPixelColor(1, pixels.Color(0, 0, 0));
-	          pixels.show();
-	        }
-
 	        if (stringCompleted) {
 	          uint8_t checksum = buf[1];
-	          /*Serial.print("Checksum: ");
-	          Serial.println(checksum);
-
-
-	          Serial.print("Received Checksum: ");
-	          Serial.println(checksumRec);*/
 	          dataCompleted = true;
 
 	          if(checksum == checksumRec) {
 	            dataVerified = true;
-	            pixels.setPixelColor(1, pixels.Color(0, 100, 0));
-	          } else {
-	            pixels.setPixelColor(1, pixels.Color(100, 0, 0));
 	          }
-	          pixels.show();
-	          on_time = millis();
 	        }
 	        else {
 	          Serial.println(buf);
