@@ -20,19 +20,24 @@ void GameServerProxy::doWork() {
 				ServerJoinAckPacket p;
 				p.readFromStream(client);
 				ui->handleJoin(&p);
+				break;
 			}
 			case PACKET_SSTART: {
 				ServerGameStartPacket p;
 				p.readFromStream(client);
+				break;
 			}
 			case PACKET_SLOGACT: {
-
+				Serial.println("UNIMPLEMENTED PACKET X! TODO!");
+				break;
 			}
 			case PACKET_SGAMEOV: {
-
+				Serial.println("UNIMPLEMENTED PACKET Y! TODO!");
+				break;
 			}
 			case PACKET_SGAMESUC: {
-
+				Serial.println("UNIMPLEMENTED PACKET Z! TODO!");
+				break;
 			}
 			default:
 			Serial.println("UNKNOWN PACKET! PANIC!");

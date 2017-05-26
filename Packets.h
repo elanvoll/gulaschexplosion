@@ -16,11 +16,10 @@ template <int TYPE>
 struct GamePacket
 {
 	virtual bool writeToStream(Stream& st) {
-		st.write(this->type);
+		st.write(uint8(TYPE));
 		this->writeToStreamInternal(st);
 	}
 	virtual bool writeToStreamInternal(Stream & st) = 0;
-	enum { type = TYPE};
 };
 
 
@@ -73,7 +72,7 @@ struct ServerGameStartPacket : GamePacket<PACKET_SSTART>
 	ServerGameStartPacket() {
 
 	}
-	ServerGameStartPacket(int gameround, String text, uint32 led1, uint32 led2, uint32 led3, uint32 led4, uint32 timeoutseconds) : 
+	ServerGameStartPacket(uint32 gameround, String text, uint32 led1, uint32 led2, uint32 led3, uint32 led4, uint32 timeoutseconds) : 
 	gameround(gameround), text(text), led1(led1), led2(led2), led3(led3), led4(led4), timeoutseconds(timeoutseconds) {
 
 	}
@@ -96,7 +95,7 @@ struct ServerGameStartPacket : GamePacket<PACKET_SSTART>
 		writeInt(st, timeoutseconds);
 	}
 	
-	int gameround;
+	uint32 gameround;
 	String text;
 	uint32 led1;
 	uint32 led2;

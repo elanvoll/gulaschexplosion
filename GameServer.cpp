@@ -79,10 +79,13 @@ void GameServer::startGame() {
 
 	std::list<WiFiClient>::iterator userItr = currentClients.begin();
 	while(instrItr != r->instructions.end() && userItr != currentClients.end()) {
+		Serial.println("Send gamestart to a player");
 		instrItr->writeToStream(*userItr);
 		++userItr;
 		++instrItr;
 	}
+	if(instrItr != r->instructions.end() || userItr != currentClients.end())
+		Serial.println("ERROR: instruction count doesn't match user number");
 	// CRITICAL! set timer
 }
 
