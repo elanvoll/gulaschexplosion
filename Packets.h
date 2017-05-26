@@ -162,6 +162,20 @@ struct ClientActionPacket : GamePacket<PACKET_CACTION> {
 	uint8 deviceorientation;
 };
 
+struct ServerGameSuccess : GamePacket<PACKET_SGAMESUC> {
+	ServerGameSuccess() {
+
+	}
+
+	bool readFromStream(Stream & s) {
+
+	}
+
+	bool writeToStreamInternal(Stream &) {
+		
+	}
+};
+
 struct SeverGameOver : GamePacket<PACKET_SGAMEOV> {
 	SeverGameOver(bool timeout, uint8 correctplayerId, uint8 correctstickdir, uint8 correctdeviceor) :
 	timeout(timeout), correctplayerId(correctplayerId), correctstickdir(correctstickdir), correctdeviceor(correctdeviceor) {

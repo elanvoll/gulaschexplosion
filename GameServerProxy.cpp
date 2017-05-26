@@ -25,20 +25,26 @@ void GameServerProxy::doWork() {
 			case PACKET_SSTART: {
 				ServerGameStartPacket p;
 				p.readFromStream(client);
-				Serial.print("got start:");
-				Serial.println(p.text);
 				ui->handleGameStart(&p);
 				break;
 			}
 			case PACKET_SLOGACT: {
+				ServerClientActionLogPacket p;
+				p.readFromStream(client);
+
 				Serial.println("UNIMPLEMENTED PACKET X! TODO!");
 				break;
 			}
 			case PACKET_SGAMEOV: {
-				Serial.println("UNIMPLEMENTED PACKET Y! TODO!");
+				SeverGameOver p;
+				p.readFromStream(client);
+				ui->handleGameOver(&p);
 				break;
 			}
 			case PACKET_SGAMESUC: {
+				ServerGameSuccess p;
+				p.readFromStream(client);
+
 				Serial.println("UNIMPLEMENTED PACKET Z! TODO!");
 				break;
 			}
