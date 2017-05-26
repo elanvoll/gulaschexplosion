@@ -40,6 +40,7 @@ public:
 	~ServerJoinAckPacket();
 	
 	bool readFromStream(Stream& st);
+	bool writeToStream(Stream& st);
 	uint8 playerId;
 };
 
@@ -50,8 +51,8 @@ public:
 	~ServerGameStartPacket();
 	
 	bool readFromStream(Stream& st);
-
-
+	bool writeToStream(Stream& st);
+	
 	int round;
 	String text;
 	int led0;

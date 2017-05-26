@@ -22,7 +22,7 @@ Menu * mainMenu = new Menu();
 GameOverlay * status = new GameOverlay(GAME_STATE_MAIN_MENU);
 uint8 state = 0;
 
-GameServer* gameServer = NULL;
+AbstractGameServer* gameServer = NULL;
 
 int8 player_id = -1;
 // Information the Host sends to all clients
@@ -37,7 +37,7 @@ void hostgame() {
 	WiFi.disconnect();
 	delay(100);
 	WiFi.mode(WIFI_AP_STA);
-	WiFi.softAPConfig(IPAddress (10, 0, 0, 1), IPAddress(10, 0, 0, 1), IPAddress(255, 255, 255, 0));
+	WiFi.softAPConfig(HOST_IP, HOST_IP, IPAddress(255, 255, 255, 0));
 	char randpw[20];
 	char ssid[20];
 	int seed = millis();
@@ -54,7 +54,7 @@ void hostgame() {
 	shareString = String(buffer);
 
   gameServer = new GameServer(GAME_TCP_PORT);
-  gameServer->begin();
+  ((GameServer*)gameServer)->begin();
 }
 
 bool joingame(const char* ssid, const char* pw) {
@@ -66,8 +66,12 @@ bool joingame(const char* ssid, const char* pw) {
 
   Serial.printf("Connecting ti wifi '%s' with password '%s'...\n", ssid, pw);
   WiFi.begin(ssid, pw);
-  return WiFi.status() == WL_CONNECTED;
+  bool result =  WiFi.status() == WL_CONNECTED;
 
+  if (result) {
+    gameServer = new GameServerProxy(HOST_IP, GAME_TCP_PORT);
+  }
+  return result;
 }
 
 void setup() {
