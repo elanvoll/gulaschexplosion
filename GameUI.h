@@ -72,13 +72,22 @@ public:
     this->onDown = onDown;
   }
 
+  void serverNewUser(uint8_t id) {
+    playerCount++;
+    dirty = true;
+    if (playerCount == PLAYERS) {
+      updateGameState(GAME_STATE_HOST_AWAIT_START);
+    }
+  }
+
   // all Handlers
   void handleJoin(ServerJoinAckPacket* packet);
 
 
 private:
   GameOverlay* statusOverlay;
-  uint8 player;
+  uint8_t player;
+  uint8_t playerCount = 0;
   bool dirty = true;
   std::function<void()> onStart;
   std::function<void()> onEnter;
