@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "GameOverlay.h"
+#include "GameServer.h"
 
 #include "defines.h"
 
@@ -20,6 +21,8 @@ WindowSystem* ui = new WindowSystem(&tft);
 Menu * mainMenu = new Menu();
 GameOverlay * status = new GameOverlay(GAME_STATE_MAIN_MENU);
 uint8 state = 0;
+
+GameServer* gameServer = NULL;
 
 int8 player_id = -1;
 // Information the Host sends to all clients
@@ -49,6 +52,9 @@ void hostgame() {
 	char buffer[41];
 	sprintf(buffer, "%s\t%s\t%s\n", ssid, randpw, APP_VERSION);
 	shareString = String(buffer);
+
+  gameServer = new GameServer(GAME_TCP_PORT);
+  gameServer->begin();
 }
 
 bool joingame(const char* ssid, const char* pw) {
