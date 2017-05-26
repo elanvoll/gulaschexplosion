@@ -61,6 +61,7 @@ void setLED(uint8_t led, uint32_t values) {
 }
 
 void GameUI::handleGameStart(ServerGameStartPacket* packet) {
+  Serial.println("Start");
   updateGameState(GAME_STATE_RUNNING);
   lastPacketMessage = String(packet->text);
   setLED(0, packet->led1);
