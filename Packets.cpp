@@ -3,15 +3,12 @@
 uint32 readUInt32(Stream& st) {
 	uint32 ret;
 	st.readBytes((char*)&ret, 4);
+	return ret;
 }
 
 
 void writeInt(Stream& st, uint32 in) {
-	for (int i=0; i<4; ++i) {
-		uint8 o = in & 0x000000FF;
-		st.write(o);
-		in >>= 8;
-	}
+	st.write((char*)&in, 4);
 }
 
 void writeString(Stream& st, String& s) {

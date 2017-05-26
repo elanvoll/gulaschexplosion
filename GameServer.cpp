@@ -53,7 +53,7 @@ void GameServer::begin() {
 GameRound* GameServer::generateGameRound() {
 	std::list<ServerGameStartPacket> instructions;
 	instructions.push_back(ServerGameStartPacket(1, "Player 2 must not press any button", 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
-	instructions.push_back(ServerGameStartPacket(1, "A player has to select green", 0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
+	instructions.push_back(ServerGameStartPacket(1, "One player has to select green", 0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
 	instructions.push_back(ServerGameStartPacket(1, "If there is red, select it first", 0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
 	// richtig: player 1 geht zu led1 = oben
 	std::list<ClientActionPacket> correctSeq;
