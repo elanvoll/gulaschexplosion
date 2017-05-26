@@ -19,6 +19,7 @@ Badge badge;
 WindowSystem* ui = new WindowSystem(&tft);
 Menu * mainMenu = new Menu();
 GameOverlay * status = new GameOverlay(GAME_STATE_MAIN_MENU);
+uint8 state = 0;
 
 void setup() {
 	badge.init();
@@ -46,11 +47,21 @@ void setup() {
   f.println(APP_NAME);
 
   mainMenu->addMenuItem(new MenuItem("Host game", []() {
-  	//
+		ClosableTextDisplay* host_screen = new ClosableTextDisplay();
+		host_screen->setText(STATE_HOST_MESSAGE);
+		host_screen->setOnClose([]() {
+      ui->closeCurrent();
+    });
+    ui->open(host_screen);
   }));
 
   mainMenu->addMenuItem(new MenuItem("Join game", []() {
-  	//
+		ClosableTextDisplay* join_screen = new ClosableTextDisplay();
+		join_screen->setText(STATE_JOIN_MESSAGE);
+		join_screen->setOnClose([]() {
+      ui->closeCurrent();
+    });
+    ui->open(join_screen);
   }));
   ui->open(mainMenu);
 }

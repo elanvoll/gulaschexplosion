@@ -14,6 +14,8 @@
 
 #define APP_NAME "Gulaschexplosion v0.1"
 
+#define STATE_HOST_MESSAGE "Share Game\nvia IR Sender"
+#define STATE_JOIN_MESSAGE "Revice Game\ninfo via IR\nSensor from\nHost"
 
 enum game_state_t {
   GAME_STATE_UNUSED = 0,
