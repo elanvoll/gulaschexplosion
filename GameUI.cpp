@@ -50,3 +50,8 @@ void GameUI::handleJoin(ServerJoinAckPacket* packet) {
   Serial.println(packet->playerId);
   this->statusOverlay->setPlayerId(packet->playerId);
 }
+
+void GameUI::handleGameStart(ServerGameStartPacket* packet) {
+ // TODO: Implement me!
+  //throw "Implement me plz";
+}

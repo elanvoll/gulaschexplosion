@@ -12,7 +12,6 @@ void GameServer::doWork() {
 		Serial.println("User joined");
 		currentClients.push_back(currentClient);
 
-		// CRITICAL: alert someone?!
 		uint8 playerid = currentClients.size();
 		ServerJoinAckPacket p;
 		p.playerId = playerid;
@@ -25,8 +24,9 @@ void GameServer::doWork() {
 	for(std::list<WiFiClient>::iterator itr = currentClients.begin(); itr!= currentClients.end(); ++itr) {
 		userid ++;
 		if(itr->available()) {
-			Serial.println("Got data from client");
+			Serial.print("Got data from client: ");
 			int packetType = itr->read();
+			Serial.println(packetType);
 			switch(packetType) {
 				case PACKET_CACTION:
 				{
@@ -65,12 +65,17 @@ GameRound* GameServer::generateGameRound() {
 	}
 }
 
+// clicked by user
 void GameServer::startGame() {
 	//CRITICAL: packets
 	// broadcast, including user0
 	// set timer
 	GameRound* r = generateGameRound();
-
+/*
+	auto instructions = r->instructions.begin();
+	// user0 gets special treatment
+	ui->handleGameStart(*);
+*/
 
 	//ServerGameStartPacket
 }

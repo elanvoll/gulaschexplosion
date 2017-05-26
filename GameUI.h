@@ -82,6 +82,7 @@ public:
 
   // all Handlers
   void handleJoin(ServerJoinAckPacket* packet);
+  void handleGameStart(ServerGameStartPacket* packet);
 
 
 private:

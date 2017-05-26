@@ -5,6 +5,8 @@
 
 #include <Stream.h>
 
+#include <HardwareSerial.h>
+
 int readInt(Stream& st);
 void writeInt(Stream& st, uint32 in);
 void writeString(Stream& st, String& s);
@@ -57,6 +59,7 @@ struct ServerJoinAckPacket : GamePacket<PACKET_SJOIN>
 	
 	bool readFromStream(Stream& st) {
 		this->playerId = st.read();
+		Serial.printf("ServerJoinAckPacket - read userid %d", playerId);
 	}
 	bool writeToStreamInternal(Stream& st) {
 		st.write(playerId);

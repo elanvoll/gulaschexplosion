@@ -13,6 +13,9 @@ bool GameServerProxy::begin() {
 void GameServerProxy::doWork() {
 	while(client.connected() && client.available()) {
 		int packetType = client.read();
+		Serial.print("Got packetType:");
+		Serial.println(packetType);
+
 		switch(packetType) {
 			case PACKET_SJOIN: {
 				ServerJoinAckPacket p;
@@ -32,6 +35,8 @@ void GameServerProxy::doWork() {
 			case PACKET_SGAMESUC: {
 
 			}
+			default:
+			Serial.println("UNKNOWN PACKET! PANIC!");
 		}
 	}
 }
