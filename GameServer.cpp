@@ -3,7 +3,32 @@
 #include "defines.h"
 
 void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
-	// TODO
+	ServerClientActionLogPacket p2(p.stickdir, 0, userid);
+	broadcast(&p2);
+	ui->handleLogClientAction(&p2);
+
+	// correct one?
+	if(correctSequence.size() == 0) {
+		Serial.println("Got client interaction although done?!");
+		return;
+	}
+
+	ServerClientActionLogPacket correctAction = *correctSequence.begin();
+	correctSequence.pop_front();
+	if(userid != correctAction.playerId || p.stickdir != correctAction.stickdir ) {
+		timeoutms = 0;
+		SeverGameOver gov(false, correctAction.playerId, correctAction.stickdir, correctAction.deviceorientation);
+		ui->handleGameOver(&gov);
+		broadcast(&gov);
+		server.close();
+	} else if (correctSequence.size() == 0) {
+		ServerGameSuccess p;
+
+		ui->handleGameSuccess(&p);
+		broadcast(&p);
+		server.close();
+		timeoutms = 0;
+	}
 }
 
 void GameServer::doWork() {
@@ -57,8 +82,20 @@ void GameServer::broadcast(BasePacket *p) {
 	}
 }
 
+void GameServer::userActionHost(uint8 direction) {
+	ClientActionPacket p(direction, 0);
+
+	this->handleClientInteraction(p, 0);
+}
+
 void GameServer::begin() {
 	ui->setOnGameStart(std::bind(&GameServer::startGame, this));
+
+	ui->setOnPushDown(std::bind(&GameServer::userActionHost, this, STICK_DIR_DOWN));
+	ui->setOnPushUp(std::bind(&GameServer::userActionHost, this, STICK_DIR_UP));
+	ui->setOnPushLeft(std::bind(&GameServer::userActionHost, this, STICK_DIR_LEFT));
+	ui->setOnPushRight(std::bind(&GameServer::userActionHost, this, STICK_DIR_RIGHT));
+
 	server.begin();
 	ServerJoinAckPacket p;
 	p.playerId = 0;

@@ -83,8 +83,10 @@ public:
   // all Handlers
   void handleJoin(ServerJoinAckPacket* packet);
   void handleGameStart(ServerGameStartPacket* packet);
+  void handleLogClientAction(ServerClientActionLogPacket* packet);
+  void handleGameSuccess(ServerGameSuccess* packet);
   void handleGameOver(SeverGameOver* packet);
-
+  
   void doTime();
 
 private:

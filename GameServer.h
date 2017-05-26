@@ -22,6 +22,7 @@ private:
   GameRound* generateGameRound();
   void handleClientInteraction(ClientActionPacket& p, uint8 userid);
   void startGame();
+  void userActionHost(uint8 direction);
   WiFiServer server;
   std::list<WiFiClient> currentClients;
   std::list<ServerClientActionLogPacket> correctSequence;

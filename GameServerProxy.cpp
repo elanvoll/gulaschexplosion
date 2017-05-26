@@ -31,8 +31,7 @@ void GameServerProxy::doWork() {
 			case PACKET_SLOGACT: {
 				ServerClientActionLogPacket p;
 				p.readFromStream(client);
-
-				Serial.println("UNIMPLEMENTED PACKET X! TODO!");
+				ui->handleLogClientAction(&p);
 				break;
 			}
 			case PACKET_SGAMEOV: {
@@ -44,8 +43,7 @@ void GameServerProxy::doWork() {
 			case PACKET_SGAMESUC: {
 				ServerGameSuccess p;
 				p.readFromStream(client);
-
-				Serial.println("UNIMPLEMENTED PACKET Z! TODO!");
+				ui->handleGameSuccess(&p);
 				break;
 			}
 			default:

@@ -98,3 +98,11 @@ void GameUI::handleGameOver(SeverGameOver* packet) {
   // TODO: implement me!
 }
 
+void GameUI::handleGameSuccess(ServerGameSuccess* packet) {
+    // TODO: implement me!
+
+}
+void GameUI::handleLogClientAction(ServerClientActionLogPacket* packet) {
+  // TODO: implement me!
+
+}
