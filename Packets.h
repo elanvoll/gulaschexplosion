@@ -32,6 +32,15 @@ Flow example:
    ServerGameStartPacket wieder
 */
 
+enum packet_types_t
+{
+	PACKET_SJOIN = 0,
+	PACKET_SSTART,
+	PACKET_CACTION,
+	PACKET_SLOGACT,
+	PACKET_SGAMEOV,
+	PACKET_SGAMESUC
+};
 
 class ServerJoinAckPacket : GamePacket
 {
@@ -61,6 +70,24 @@ public:
 	int led3;
 	int timeoutseconds;
 };
+
+class ServerClientActionLogPacket : GamePacket
+{
+public:
+	bool readFromStream(Stream& st);
+	bool writeToStream(Stream& st);
+	int stickdir;
+	int deviceorientation;
+	uint8 playerid;
+};
+
+class ClientActionPacket : GamePacket {
+public:
+	bool readFromStream(Stream& st);
+	bool writeToStream(Stream& st);
+	uint8 stickdir;
+	uint8 deviceorientation;
+}
 
 
 #endif

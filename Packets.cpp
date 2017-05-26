@@ -28,4 +28,8 @@ bool ServerGameStartPacket::readFromStream(Stream& st) {
 	timeoutseconds = readInt(st);
 }
 
-
+bool ServerClientActionLogPacket::readFromStream(Stream& st) {
+	stickdir = st.read();
+	deviceorientation = st.read();
+	playerid = st.read();
+}
