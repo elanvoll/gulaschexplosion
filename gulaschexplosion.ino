@@ -2,6 +2,7 @@
 #include <GPNBadge.hpp>
 
 #include <BadgeUI.h>
+#include "GameUI.h"
 #include <FS.h>
 
 #include <rboot-api.h>
@@ -23,6 +24,7 @@ GameOverlay * status = new GameOverlay(GAME_STATE_MAIN_MENU);
 uint8 state = 0;
 
 AbstractGameServer* gameServer = NULL;
+GameUI* gameUi = NULL;
 
 int8 player_id = -1;
 // Information the Host sends to all clients
@@ -53,25 +55,10 @@ void hostgame() {
 	sprintf(buffer, "%s\t%s\t%s\n", ssid, randpw, APP_VERSION);
 	shareString = String(buffer);
 
+	gameUi = new GameUI();
+	ui->open(gameUi);
   gameServer = new GameServer(GAME_TCP_PORT);
   ((GameServer*)gameServer)->begin();
-}
-
-bool joingame(const char* ssid, const char* pw) {
-  WiFi.mode(WIFI_STA);
-  delay(30);
-
-  // might not be requried...
-  ssid = strdup(ssid);
-
-  Serial.printf("Connecting ti wifi '%s' with password '%s'...\n", ssid, pw);
-  WiFi.begin(ssid, pw);
-  bool result =  WiFi.status() == WL_CONNECTED;
-
-  if (result) {
-    gameServer = new GameServerProxy(HOST_IP, GAME_TCP_PORT);
-  }
-  return result;
 }
 
 void setup() {
@@ -120,10 +107,6 @@ void setup() {
       ui->closeCurrent();
     });
     ui->open(join_screen);
-
-    bool joinedgame = joingame("test", "test");
-    Serial.println("joined game:");
-    Serial.println(joinedgame);
   }));
   ui->open(mainMenu);
 }
@@ -282,6 +265,9 @@ void connectToWifi(String ssid, String psk) {
   if (wStat == WL_CONNECTED) {
     Serial.println("Success");
 		Serial.println("IP: " + WiFi.localIP().toString());
+		gameUi = new GameUI();
+		ui->open(gameUi);
+		gameServer = new GameServerProxy(HOST_IP, GAME_TCP_PORT);
   } else {
     Serial.println("Fail");
   }
