@@ -111,6 +111,10 @@ void loop() {
 		case GAME_STATE_RECEIVING_ACCESS:
 			receiveGameInformation();
 			break;
+    case GAME_STATE_HOST_AWAIT_START:
+    case GAME_STATE_CLIENT_AWAIT_START:
+    case GAME_STATE_RUNNING:
+      gameServer->doWork();
 	}
 }
 
@@ -253,12 +257,14 @@ void connectToWifi(String ssid, String psk) {
   if (wStat == WL_CONNECTED) {
     Serial.println("Success");
 		Serial.println("IP: " + WiFi.localIP().toString());
+    gameUi->updateGameState(GAME_STATE_CLIENT_AWAIT_START);
 		gameServer = new GameServerProxy(HOST_IP, GAME_TCP_PORT, gameUi);
     ((GameServerProxy*)gameServer)->begin();
   } else {
     Serial.println("Fail");
+    gameUi->updateGameState(GAME_STATE_MAIN_MENU);
+    ui->closeCurrent();
   }
-	gameUi->updateGameState(GAME_STATE_CLIENT_AWAIT_START);
 }
 
 void showVersionErrorScreen(String version) {
