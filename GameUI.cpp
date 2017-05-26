@@ -21,12 +21,19 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
     switch(this->statusOverlay->getGameState()) {
       case GAME_STATE_SHARING_ACCESS:
         message = "Awaiting more players to connect";
+        break;
       case GAME_STATE_HOST_AWAIT_START:
         message = "Press joystick to start";
+        break;
       case GAME_STATE_RUNNING:
         message = "Lets play";
+        break;
+      case GAME_STATE_RECEIVING_ACCESS:
+        message = "Warte auf IR";
+        break;
       case GAME_STATE_CLIENT_AWAIT_START:
         message = "Waiting for Host to start";
+        break;
     }
 
     tft->fillScreen(theme->backgroundColor);

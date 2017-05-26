@@ -3,7 +3,8 @@
 #include "defines.h"
 
 bool GameServerProxy::begin() {
-	if(!client.connect(HOST_IP, GAME_TCP_PORT)) {
+	Serial.printf("hi");
+	if(!client.connect(ip, port)) {
 		return false;
 	}
 	return true;

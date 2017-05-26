@@ -86,15 +86,15 @@ void setup() {
   f.println(APP_NAME);
 
   mainMenu->addMenuItem(new MenuItem("Host game", []() {
-    status->updateGameState(GAME_STATE_SHARING_ACCESS);
     gameUi = new GameUI(status);
+    gameUi->updateGameState(GAME_STATE_SHARING_ACCESS);
     ui->open(gameUi);
     hostgame();
   }));
 
   mainMenu->addMenuItem(new MenuItem("Join game", []() {
-		status->updateGameState(GAME_STATE_RECEIVING_ACCESS);
 		gameUi = new GameUI(status);
+    gameUi->updateGameState(GAME_STATE_RECEIVING_ACCESS);
     ui->open(gameUi);
   }));
   ui->open(mainMenu);
@@ -244,7 +244,6 @@ void connectToWifi(String ssid, String psk) {
     }
     delay(10);
     wStat = WiFi.status();
-    Serial.printf("Wstat: %d\n", wStat);
   }
   pixels.setPixelColor(1, pixels.Color(0, 0, 0));
   pixels.setPixelColor(2, pixels.Color(0, 0, 0));
@@ -255,19 +254,18 @@ void connectToWifi(String ssid, String psk) {
     Serial.println("Success");
 		Serial.println("IP: " + WiFi.localIP().toString());
 		gameServer = new GameServerProxy(HOST_IP, GAME_TCP_PORT, gameUi);
+    ((GameServerProxy*)gameServer)->begin();
   } else {
     Serial.println("Fail");
   }
-	Serial.println("Verison match");
-	status->updateGameState(GAME_STATE_CLIENT_AWAIT_START);
-	ui->closeCurrent();
+	gameUi->updateGameState(GAME_STATE_CLIENT_AWAIT_START);
 }
 
 void showVersionErrorScreen(String version) {
 	ClosableTextDisplay * versionErrorScreen = new ClosableTextDisplay();
 	versionErrorScreen->setText("Server Version " + version + " is incompatible with client Version " + APP_VERSION);
 	versionErrorScreen->setOnClose([]() {
-		status->updateGameState(GAME_STATE_MAIN_MENU);
+		gameUi->updateGameState(GAME_STATE_MAIN_MENU);
 		ui->closeCurrent();
 	});
 	ui->open(versionErrorScreen);

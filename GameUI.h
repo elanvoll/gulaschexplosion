@@ -43,6 +43,11 @@ public:
     }
   }
 
+  void updateGameState(game_state_t t) {
+    statusOverlay->updateGameState(t);
+    dirty = true;
+  }
+
   void setOnGameStart(std::function<void()> onStart) {
     this->onStart = onStart;
   }
