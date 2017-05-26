@@ -67,17 +67,23 @@ GameRound* GameServer::generateGameRound() {
 
 // clicked by user
 void GameServer::startGame() {
-	//CRITICAL: packets
-	// broadcast, including user0
-	// set timer
-	GameRound* r = generateGameRound();
-/*
-	auto instructions = r->instructions.begin();
-	// user0 gets special treatment
-	ui->handleGameStart(*);
-*/
 
-	//ServerGameStartPacket
+	GameRound* r = generateGameRound();
+	Serial.println("host clicked start");
+
+	std::list<ServerGameStartPacket>::iterator instrItr = r->instructions.begin();
+	// user0 gets special treatment
+	ui->handleGameStart(&*instrItr);
+
+	++instrItr;
+
+	std::list<WiFiClient>::iterator userItr = currentClients.begin();
+	while(instrItr != r->instructions.end() && userItr != currentClients.end()) {
+		instrItr->writeToStream(*userItr);
+		++userItr;
+		++instrItr;
+	}
+	// CRITICAL! set timer
 }
 
 GameServer::~GameServer() {
