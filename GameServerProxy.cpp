@@ -25,6 +25,7 @@ void GameServerProxy::doWork() {
 			case PACKET_SSTART: {
 				ServerGameStartPacket p;
 				p.readFromStream(client);
+				ui->handleGameStart(&p);
 				break;
 			}
 			case PACKET_SLOGACT: {
