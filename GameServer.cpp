@@ -9,6 +9,7 @@ void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 void GameServer::doWork() {
 	WiFiClient currentClient = server.available();
 	if (currentClient && currentClient.connected())  {
+		Serial.println("User joined");
 		currentClients.push_back(currentClient);
 
 		// CRITICAL: alert someone?!
@@ -24,6 +25,7 @@ void GameServer::doWork() {
 	for(std::list<WiFiClient>::iterator itr = currentClients.begin(); itr!= currentClients.end(); ++itr) {
 		userid ++;
 		if(itr->available()) {
+			Serial.println("Got data from client");
 			int packetType = itr->read();
 			switch(packetType) {
 				case PACKET_CACTION:

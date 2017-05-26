@@ -104,13 +104,12 @@ void loop() {
 	ui->dispatchInput(badge.getJoystickState());
 	ui->draw();
 	switch(status->getGameState()) {
-		case GAME_STATE_SHARING_ACCESS: {
-			sendGameInformation();
-			break;
-		}
 		case GAME_STATE_RECEIVING_ACCESS:
 			receiveGameInformation();
-			break;
+      break;
+    case GAME_STATE_SHARING_ACCESS:
+      sendGameInformation();
+       // no break by intention!
     case GAME_STATE_HOST_AWAIT_START:
     case GAME_STATE_CLIENT_AWAIT_START:
     case GAME_STATE_RUNNING:
@@ -124,7 +123,7 @@ void sendGameInformation() {
 	Serial.println(shareString);
 	if (shareString.length() != 0) {
 		badge.setGPIO(IR_EN, HIGH);
-		Serial.println("NEC");
+		// Serial.println("NEC");
 		uint32_t code = 0;
 		uint8_t checksum = 0;
 		for (int i = 0; i < shareString.length(); i++){
@@ -133,16 +132,16 @@ void sendGameInformation() {
 			code = code | shareString.charAt(i) << (i % 4)*8;
 			if (i % 4 == 3) {
 				irsend.sendNEC(code, 32);
-				Serial.println(code, HEX);
+				// Serial.println(code, HEX);
 				code = 0;
 			}
 		}
 		if (code != 0) {
 			irsend.sendNEC(code, 32);
-			Serial.println(code, HEX);
+			// Serial.println(code, HEX);
 		}
-		Serial.print("Checksum: ");
-		Serial.println(checksum); //224
+		// Serial.print("Checksum: ");
+		// Serial.println(checksum); //224
 		code = 0;
 		code = checksum << 8 | 222;
 		irsend.sendNEC(code, 32);
