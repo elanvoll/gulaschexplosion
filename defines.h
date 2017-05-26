@@ -13,6 +13,7 @@
 #define WHITE   0xFFFF
 
 #define APP_NAME "Gulaschbombe"
+#define APP_VERSION "0.1"
 
 #define STATE_HOST_MESSAGE "Share Game\nvia IR Sender"
 #define STATE_JOIN_MESSAGE "Revice Game\ninfo via IR\nSensor from\nHost"
