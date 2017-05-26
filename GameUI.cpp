@@ -47,6 +47,7 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
 }
 
 void GameUI::handleJoin(ServerJoinAckPacket* packet) {
+  dirty = true;
   this->statusOverlay->setPlayerId(packet->playerId);
 }
 
