@@ -97,6 +97,14 @@ void setup() {
     gameUi->updateGameState(GAME_STATE_RECEIVING_ACCESS);
     ui->open(gameUi);
   }));
+
+  mainMenu->addMenuItem(new MenuItem("Dumnmy game", []() {
+    gameUi = new GameUI(status);
+    gameUi->updateGameState(GAME_STATE_RUNNING);
+    ui->open(gameUi);
+    ServerGameStartPacket s = ServerGameStartPacket(1, "Player 2 must not press any button", 0xFFFFFF00, 0xFFFF00FF, 0xFF00FFFF, 0xFFFFFFFF, 20);
+    gameUi->handleGameStart(&s);
+  }));
   ui->open(mainMenu);
 }
 
@@ -113,7 +121,9 @@ void loop() {
     case GAME_STATE_HOST_AWAIT_START:
     case GAME_STATE_CLIENT_AWAIT_START:
     case GAME_STATE_RUNNING:
-      gameServer->doWork();
+      if (gameServer != NULL) {
+        gameServer->doWork();
+      }
 	}
 }
 

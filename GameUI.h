@@ -86,6 +86,8 @@ public:
 
 
 private:
+  String lastPacketMessage;
+
   GameOverlay* statusOverlay;
   uint8_t player;
   uint8_t playerCount = 0;

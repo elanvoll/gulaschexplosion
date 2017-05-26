@@ -26,14 +26,14 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
       case GAME_STATE_HOST_AWAIT_START:
         message = "Press joystick to start";
         break;
-      case GAME_STATE_RUNNING:
-        message = "Lets play";
-        break;
       case GAME_STATE_RECEIVING_ACCESS:
         message = "Warte auf IR";
         break;
       case GAME_STATE_CLIENT_AWAIT_START:
         message = "Waiting for Host to start";
+        break;
+      case GAME_STATE_RUNNING:
+        message = lastPacketMessage;
         break;
     }
 
@@ -47,11 +47,24 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
 }
 
 void GameUI::handleJoin(ServerJoinAckPacket* packet) {
-  Serial.println(packet->playerId);
   this->statusOverlay->setPlayerId(packet->playerId);
 }
 
+void setLED(uint8_t led, uint32_t values) {
+  uint8_t l = (uint8_t)((values & 0xFF000000) >> 24);
+  uint8_t r = (uint8_t)((values & 0x00FF0000) >> 16);
+  uint8_t g = (uint8_t)((values & 0x0000FF00) >> 8);
+  uint8_t b = (uint8_t)((values & 0x000000FF));
+  Serial.printf("%d/%d/%d/%d\n", l, r, g, b);
+  pixels.setPixelColor(led, pixels.Color(r, g, b));
+}
+
 void GameUI::handleGameStart(ServerGameStartPacket* packet) {
- // TODO: Implement me!
-  //throw "Implement me plz";
+  updateGameState(GAME_STATE_RUNNING);
+  lastPacketMessage = String(packet->text);
+  setLED(0, packet->led1);
+  setLED(1, packet->led2);
+  setLED(2, packet->led3);
+  setLED(3, packet->led4);
+  pixels.show();
 }
