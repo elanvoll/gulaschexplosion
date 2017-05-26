@@ -1,5 +1,6 @@
 #include "GameServerProxy.h"
 
+#include "defines.h"
 
 bool GameServerProxy::begin() {
 	if(!client.connect(HOST_IP, GAME_TCP_PORT)) {
@@ -15,6 +16,7 @@ void GameServerProxy::doWork() {
 			case PACKET_SJOIN: {
 				ServerJoinAckPacket p;
 				p.readFromStream(client);
+				ui->handleJoin(&p);
 			}
 			case PACKET_SSTART: {
 				ServerGameStartPacket p;
@@ -31,4 +33,8 @@ void GameServerProxy::doWork() {
 			}
 		}
 	}
+}
+
+GameServerProxy::~GameServerProxy() {
+	client.stop();
 }

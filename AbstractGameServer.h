@@ -1,16 +1,17 @@
 #pragma once
 
+#include "GameUI.h"
+
 class AbstractGameServer
 {
 public:
-	virtual AbstractGameServer(Ui) : ui(ui) {
+	AbstractGameServer(GameUI* gui) : ui(ui) {
 
 	}
-	virtual ~AbstractGameServer() = 0;
-
-	virtual void startGame() = 0;
+	virtual ~AbstractGameServer(){
+		
+	}
+	virtual void doWork() = 0;
 	
-	virtual void userAction() = 0;
-	
-	Ui ui;
+	GameUI* ui;
 };

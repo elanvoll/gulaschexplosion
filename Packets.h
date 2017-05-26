@@ -6,11 +6,8 @@
 #include <Stream.h>
 
 
-class GamePacket
+struct GamePacket
 {
-public:
-	GamePacket();
-	~GamePacket();
 };
 
 
@@ -42,23 +39,16 @@ enum packet_types_t
 	PACKET_SGAMESUC
 };
 
-class ServerJoinAckPacket : GamePacket
+struct ServerJoinAckPacket : GamePacket
 {
-public:
-	ServerJoinAckPacket();
-	~ServerJoinAckPacket();
 	
 	bool readFromStream(Stream& st);
 	bool writeToStream(Stream& st);
 	uint8 playerId;
 };
 
-class ServerGameStartPacket : GamePacket
+struct ServerGameStartPacket : GamePacket
 {
-public:
-	ServerGameStartPacket();
-	~ServerGameStartPacket();
-	
 	bool readFromStream(Stream& st);
 	bool writeToStream(Stream& st);
 	
@@ -71,9 +61,8 @@ public:
 	int timeoutseconds;
 };
 
-class ServerClientActionLogPacket : GamePacket
+struct ServerClientActionLogPacket : GamePacket
 {
-public:
 	bool readFromStream(Stream& st);
 	bool writeToStream(Stream& st);
 	int stickdir;
@@ -81,13 +70,12 @@ public:
 	uint8 playerid;
 };
 
-class ClientActionPacket : GamePacket {
-public:
+struct ClientActionPacket : GamePacket {
 	bool readFromStream(Stream& st);
 	bool writeToStream(Stream& st);
 	uint8 stickdir;
 	uint8 deviceorientation;
-}
+};
 
 
 #endif

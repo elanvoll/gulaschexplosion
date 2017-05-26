@@ -14,6 +14,7 @@
 
 #include "GameOverlay.h"
 #include "GameServer.h"
+#include "GameServerProxy.h"
 
 #include "defines.h"
 
@@ -57,7 +58,7 @@ void hostgame() {
 
 	gameUi = new GameUI();
 	ui->open(gameUi);
-  gameServer = new GameServer(GAME_TCP_PORT);
+  gameServer = new GameServer(GAME_TCP_PORT, gameUi);
   ((GameServer*)gameServer)->begin();
 }
 
@@ -267,7 +268,7 @@ void connectToWifi(String ssid, String psk) {
 		Serial.println("IP: " + WiFi.localIP().toString());
 		gameUi = new GameUI();
 		ui->open(gameUi);
-		gameServer = new GameServerProxy(HOST_IP, GAME_TCP_PORT);
+		gameServer = new GameServerProxy(HOST_IP, GAME_TCP_PORT, gameUi);
   } else {
     Serial.println("Fail");
   }

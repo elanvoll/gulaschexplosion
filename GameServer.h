@@ -6,18 +6,20 @@
 
 #include <list>
 
-#include "GameServerProxy.h"
+#include "AbstractGameServer.h"
 
 // actual gameserver. runs on host only
 
 class GameServer : public AbstractGameServer {
 public:
-  GameServer(int port)
-    : server(port){}
-  ~GameServer();
+  GameServer(int port, GameUI* ui)
+    : AbstractGameServer(ui), server(port){}
+  virtual ~GameServer();
   void begin();
   void doWork();
 private:
+  void handleClientInteraction(ClientActionPacket& p, uint8 userid);
+  void startGame();
   WiFiServer server;
   std::list<WiFiClient> currentClients;
 };

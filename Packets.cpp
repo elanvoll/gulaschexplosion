@@ -33,3 +33,8 @@ bool ServerClientActionLogPacket::readFromStream(Stream& st) {
 	deviceorientation = st.read();
 	playerid = st.read();
 }
+
+bool ClientActionPacket::readFromStream(Stream& st) {
+	stickdir = st.read();
+	deviceorientation = st.read();
+}
