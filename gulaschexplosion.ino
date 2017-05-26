@@ -247,6 +247,7 @@ void connectToWifi(String ssid, String psk) {
     }
     delay(10);
     wStat = WiFi.status();
+    Serial.println(wStat);
   }
   pixels.setPixelColor(1, pixels.Color(0, 0, 0));
   pixels.setPixelColor(2, pixels.Color(0, 0, 0));
@@ -261,9 +262,20 @@ void connectToWifi(String ssid, String psk) {
     ((GameServerProxy*)gameServer)->begin();
   } else {
     Serial.println("Fail");
-    gameUi->updateGameState(GAME_STATE_MAIN_MENU);
-    ui->closeCurrent();
+    showWifiConnectionError();
   }
+}
+
+void showWifiConnectionError() {
+  ClosableTextDisplay * wifiErrorScreen = new ClosableTextDisplay();
+	wifiErrorScreen->setText("Cannot establish wifi connection.");
+	wifiErrorScreen->setOnClose([]() {
+		gameUi->updateGameState(GAME_STATE_MAIN_MENU);
+		ui->closeCurrent();
+    ui->open(mainMenu);
+	});
+  ui->closeCurrent();
+	ui->open(wifiErrorScreen);
 }
 
 void showVersionErrorScreen(String version) {
