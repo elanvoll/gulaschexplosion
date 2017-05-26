@@ -19,7 +19,44 @@ Badge badge;
 WindowSystem* ui = new WindowSystem(&tft);
 Menu * mainMenu = new Menu();
 GameOverlay * status = new GameOverlay(GAME_STATE_MAIN_MENU);
-uint8 state = 0;
+
+
+int8 player_id = -1;
+
+bool isHost() {
+  return player_id == PLAYER_ID_HOST;
+}
+
+void hostgame() {
+	WiFi.disconnect();
+	delay(100);
+	WiFi.mode(WIFI_AP_STA);
+	WiFi.softAPConfig(IPAddress (10, 0, 0, 1), IPAddress(10, 0, 0, 1), IPAddress(255, 255, 255, 0));
+	char randpw[20];
+	char ssid[20];
+	int seed = millis();
+	for (int i = 0; i < 15; ++i) {
+		seed += badge.getBatLvl();
+		seed += badge.getLDRLvl();
+	}
+	randomSeed(seed);
+	sprintf(randpw, "%d", random(10000000, 100000000)); // TODO richtig machen
+	sprintf(ssid, "ESP%d", ESP.getChipId());
+	WiFi.softAP(ssid, randpw);
+}
+
+bool joingame(const char* ssid, const char* pw) {
+  WiFi.mode(WIFI_STA);
+  delay(30);
+  
+  // might not be requried...
+  ssid = strdup(ssid);
+
+  Serial.printf("Connecting ti wifi '%s' with password '%s'...\n", ssid, pw);
+  WiFi.begin(ssid, pw);
+  return WiFi.status() == WL_CONNECTED;
+
+}
 
 void setup() {
 	badge.init();
@@ -47,6 +84,7 @@ void setup() {
   f.println(APP_NAME);
 
   mainMenu->addMenuItem(new MenuItem("Host game", []() {
+    hostgame();
 		ClosableTextDisplay* host_screen = new ClosableTextDisplay();
 		host_screen->setText(STATE_HOST_MESSAGE);
 		host_screen->setOnClose([]() {
@@ -62,6 +100,10 @@ void setup() {
       ui->closeCurrent();
     });
     ui->open(join_screen);
+
+    bool joinedgame = joingame("test", "test");
+    Serial.println("joined game:");
+    Serial.println(joinedgame);
   }));
   ui->open(mainMenu);
 }

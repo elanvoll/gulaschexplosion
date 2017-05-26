@@ -12,7 +12,7 @@
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 
-#define APP_NAME "Gulaschexplosion v0.1"
+#define APP_NAME "Gulaschbombe"
 
 #define STATE_HOST_MESSAGE "Share Game\nvia IR Sender"
 #define STATE_JOIN_MESSAGE "Revice Game\ninfo via IR\nSensor from\nHost"
@@ -24,6 +24,6 @@ enum game_state_t {
   GAME_STATE_RECEIVING_ACCESS
 };
 
-
+#define PLAYER_ID_HOST 0
 
 #endif
