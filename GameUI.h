@@ -2,11 +2,13 @@
 
 #include <GPNBadge.hpp>
 #include <BadgeUI.h>
+#include "GameOverlay.h"
 #include "Packets.h"
+
 
 class GameUI: public UIElement {
 public:
-  GameUI();
+  GameUI(GameOverlay* statusOverlay);
   ~GameUI();
   void draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t offsetY);
 
@@ -15,11 +17,12 @@ public:
   }
 
   void dispatchInput(JoystickState state) {
-    if (false) {
+    Serial.println("dispatchInput");
+    if (statusOverlay->getGameState() == GAME_STATE_HOST_AWAIT_START) {
       if(state == JoystickState::BTN_ENTER) {
         onStart();
       }
-    } else {
+    } else if (statusOverlay->getGameState() == GAME_STATE_RUNNING){
       switch (state) {
         case JoystickState::BTN_ENTER:
           if (onEnter) onEnter();
@@ -69,8 +72,9 @@ public:
 
 
 private:
+  GameOverlay* statusOverlay;
   uint8 player;
-  bool dirty = false;
+  bool dirty = true;
   std::function<void()> onStart;
   std::function<void()> onEnter;
   std::function<void()> onLeft;

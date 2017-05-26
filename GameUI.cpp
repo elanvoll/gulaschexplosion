@@ -6,26 +6,39 @@
 #include <Fonts/Org_01.h>
 #include <TFT_ILI9163C.h>
 
-GameUI::GameUI() {
-
+GameUI::GameUI(GameOverlay* statusOverlay) {
+  this->statusOverlay = statusOverlay;
+  Serial.printf("%x", this);
 }
 
 GameUI::~GameUI() {
-  
+
 }
 
 void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t offsetY) {
+  statusOverlay->draw(tft, theme, offsetX, offsetY);
+    String message;
+    switch(this->statusOverlay->getGameState()) {
+      case GAME_STATE_SHARING_ACCESS:
+        message = "Awaiting more players to connect";
+      case GAME_STATE_HOST_AWAIT_START:
+        message = "Press joystick to start";
+      case GAME_STATE_RUNNING:
+        message = "Lets play";
+      case GAME_STATE_CLIENT_AWAIT_START:
+        message = "Waiting for Host to start";
+    }
+
     tft->fillScreen(theme->backgroundColor);
     tft->setTextColor(theme->textColor);
-    tft->setFont(&FreeSans24pt7b);
+    tft->setFont(&FreeSans9pt7b);
     tft->setTextSize(1);
     tft->setCursor(5, 75);
-    tft->print("Spiel");
-    tft->setFont(&FreeSans9pt7b);
+    tft->print(message);
     this->dirty = false;
 }
 
 void GameUI::handleJoin(ServerJoinAckPacket* packet) {
-  Serial.println("Joined");
-  this->player = packet->playerId;
+  Serial.println(packet->playerId);
+  this->statusOverlay->setPlayerId(packet->playerId);
 }

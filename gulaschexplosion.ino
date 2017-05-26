@@ -56,8 +56,6 @@ void hostgame() {
 	sprintf(buffer, "%s\t%s\t%s\n", ssid, randpw, APP_VERSION);
 	shareString = String(buffer);
 
-	gameUi = new GameUI();
-	ui->open(gameUi);
   gameServer = new GameServer(GAME_TCP_PORT, gameUi);
   ((GameServer*)gameServer)->begin();
 }
@@ -89,25 +87,15 @@ void setup() {
 
   mainMenu->addMenuItem(new MenuItem("Host game", []() {
     status->updateGameState(GAME_STATE_SHARING_ACCESS);
+    gameUi = new GameUI(status);
+    ui->open(gameUi);
     hostgame();
-    ClosableTextDisplay* host_screen = new ClosableTextDisplay();
-    host_screen->setText(STATE_HOST_MESSAGE);
-    host_screen->setOnClose([]() {
-      status->updateGameState(GAME_STATE_MAIN_MENU);
-      ui->closeCurrent();
-    });
-    ui->open(host_screen);
   }));
 
   mainMenu->addMenuItem(new MenuItem("Join game", []() {
 		status->updateGameState(GAME_STATE_RECEIVING_ACCESS);
-		ClosableTextDisplay* join_screen = new ClosableTextDisplay();
-		join_screen->setText(STATE_JOIN_MESSAGE);
-		join_screen->setOnClose([]() {
-			status->updateGameState(GAME_STATE_MAIN_MENU);
-      ui->closeCurrent();
-    });
-    ui->open(join_screen);
+		gameUi = new GameUI(status);
+    ui->open(gameUi);
   }));
   ui->open(mainMenu);
 }
@@ -266,14 +254,12 @@ void connectToWifi(String ssid, String psk) {
   if (wStat == WL_CONNECTED) {
     Serial.println("Success");
 		Serial.println("IP: " + WiFi.localIP().toString());
-		gameUi = new GameUI();
-		ui->open(gameUi);
 		gameServer = new GameServerProxy(HOST_IP, GAME_TCP_PORT, gameUi);
   } else {
     Serial.println("Fail");
   }
 	Serial.println("Verison match");
-	status->updateGameState(GAME_STATE_MAIN_MENU);
+	status->updateGameState(GAME_STATE_CLIENT_AWAIT_START);
 	ui->closeCurrent();
 }
 

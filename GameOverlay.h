@@ -1,3 +1,5 @@
+#pragma once
+
 #include <BadgeUI.h>
 #include "defines.h"
 
@@ -22,9 +24,19 @@ public:
     return this->gameState;
   }
 
+  void setPlayerId(uint8_t id) {
+    this->playerId = id;
+    this->dirty = true;
+  }
+
+  uint8_t getPlayerId() {
+    return this->playerId;
+  }
+
   uint16_t getOffsetX();
   uint16_t getOffsetY();
 private:
+  uint8_t playerId;
   game_state_t gameState;
   bool dirty = true;
 };

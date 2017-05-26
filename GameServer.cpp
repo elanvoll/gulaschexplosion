@@ -2,7 +2,7 @@
 
 
 void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
-	// TODO 
+	// TODO
 }
 
 void GameServer::doWork() {
@@ -42,7 +42,6 @@ void GameServer::begin() {
 	ServerJoinAckPacket p;
 	p.playerId = 0;
 	ui->handleJoin(&p);
-
 	ui->setOnGameStart(std::bind(&GameServer::startGame, this));
 }
 

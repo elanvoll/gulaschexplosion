@@ -5,13 +5,13 @@
 class AbstractGameServer
 {
 public:
-	AbstractGameServer(GameUI* gui) : ui(ui) {
+	AbstractGameServer(GameUI* ui) : ui(ui) {
 
 	}
 	virtual ~AbstractGameServer(){
-		
+
 	}
 	virtual void doWork() = 0;
-	
+
 	GameUI* ui;
 };
