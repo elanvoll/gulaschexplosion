@@ -81,7 +81,7 @@ struct ServerGameStartPacket : GamePacket<PACKET_SSTART>
 		gameround = readUInt32(st);
 		Serial.print("gameround:");
 		Serial.println(gameround);
-		text = st.readString();
+		text = st.readStringUntil(char(0));
 		Serial.print("text:");
 		Serial.println(text);
 		led1 = readUInt32(st);
