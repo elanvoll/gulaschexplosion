@@ -86,23 +86,39 @@ void setup() {
   f.println(APP_NAME);
 
   mainMenu->addMenuItem(new MenuItem("Host game", []() {
-    gameUi = new GameUI(status);
+    gameUi = new GameUI(status, &badge);
     gameUi->updateGameState(GAME_STATE_SHARING_ACCESS);
     ui->open(gameUi);
     hostgame();
   }));
 
   mainMenu->addMenuItem(new MenuItem("Join game", []() {
-		gameUi = new GameUI(status);
+		gameUi = new GameUI(status, &badge);
     gameUi->updateGameState(GAME_STATE_RECEIVING_ACCESS);
     ui->open(gameUi);
   }));
 
-  mainMenu->addMenuItem(new MenuItem("Dumnmy game", []() {
-    gameUi = new GameUI(status);
+  mainMenu->addMenuItem(new MenuItem("Du Game Over", []() {
+    gameUi = new GameUI(status, &badge);
     ui->open(gameUi);
-    ServerGameStartPacket s = ServerGameStartPacket(1, "Player 2 must not press any button", 0x222222, 0x44004400, 0x55550000, 0x22222222, 20);
+    gameUi->updateGameState(GAME_STATE_RUNNING);
+    SeverGameOver s = SeverGameOver(true, 1, 2, 3);
+    gameUi->handleGameOver(&s);
+    gameUi->setOnPushEnter([]() {
+      gameUi->resetLEDs();
+      ui->closeCurrent();
+    });
+  }));
+
+  mainMenu->addMenuItem(new MenuItem("Dumnmy Start", []() {
+    gameUi = new GameUI(status, &badge);
+    ui->open(gameUi);
+    ServerGameStartPacket s = ServerGameStartPacket(1, "Player 2 must not press any button", 0x222222, 0x44004400, 0x55550000, 0x22222222, 5);
     gameUi->handleGameStart(&s);
+    gameUi->setOnPushEnter([]() {
+      gameUi->resetLEDs();
+      ui->closeCurrent();
+    });
   }));
   ui->open(mainMenu);
 }
@@ -232,6 +248,11 @@ void receiveGameInformation() {
 }
 
 void connectToWifi(String ssid, String psk) {
+  gameUi->updateGameState(GAME_STATE_CONNECTING_WIFI);
+  badge.setVibrator(true);
+  delay(42);
+  badge.setVibrator(false);
+  ui->draw();
 	WiFi.begin(ssid.c_str(), psk.c_str()); // quick fix.. chnage in js
   Serial.printf("Trying connect to %s...\n", ssid.c_str());
   int wStat = WiFi.status();

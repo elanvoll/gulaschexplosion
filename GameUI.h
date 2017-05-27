@@ -8,7 +8,7 @@
 
 class GameUI: public UIElement {
 public:
-  GameUI(GameOverlay* statusOverlay);
+  GameUI(GameOverlay* statusOverlay, Badge* badge);
   ~GameUI();
   void draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t offsetY);
 
@@ -86,15 +86,19 @@ public:
   void handleLogClientAction(ServerClientActionLogPacket* packet);
   void handleGameSuccess(ServerGameSuccess* packet);
   void handleGameOver(SeverGameOver* packet);
-  
+
   void doTime();
+  void vib(uint16_t);
+  void resetLEDs();
 
 private:
   String lastPacketMessage;
   unsigned long lastTime = 0;
   uint32_t remainingTime = 0;
+  uint16_t remainingVib = 0;
 
   GameOverlay* statusOverlay;
+  Badge* badge;
   uint8_t player;
   uint8_t playerCount = 0;
   bool dirty = true;
