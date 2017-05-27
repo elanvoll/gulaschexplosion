@@ -3,6 +3,10 @@
 #include "defines.h"
 
 void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
+	if (serverState != GAME_SERVER_STATE_RUNNING) {
+		Serial.println("got client interaction while game is not running");
+		return;
+	}
 	ServerClientActionLogPacket p2(p.stickdir, 0, userid);
 	broadcast(&p2);
 	ui->handleLogClientAction(&p2);
@@ -16,12 +20,13 @@ void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 	ServerClientActionLogPacket correctAction = *correctSequence.begin();
 	correctSequence.pop_front();
 	if(userid != correctAction.playerId || p.stickdir != correctAction.stickdir ) {
-		timeoutms = 0;
+		serverState = GAME_SERVER_STATE_READY;
 		SeverGameOver gov(false, correctAction.playerId, correctAction.stickdir, correctAction.deviceorientation);
 		ui->handleGameOver(&gov);
 		broadcast(&gov);
 		server.close();
 	} else if (correctSequence.size() == 0) {
+		serverState = GAME_SERVER_STATE_READY;
 		ServerGameSuccess p;
 
 		ui->handleGameSuccess(&p);
@@ -35,15 +40,23 @@ void GameServer::doWork() {
 	WiFiClient currentClient = server.available();
 	if (currentClient && currentClient.connected())  {
 		Serial.println("User joined");
-		currentClients.push_back(currentClient);
+		if(serverState != GAME_SERVER_STATE_LISTEN) {
+			Serial.println("Got new player in wrong state");
+			currentClient.stop();
+		} else {
+			currentClients.push_back(currentClient);
 
-		uint8 playerid = currentClients.size();
-		ServerJoinAckPacket p;
-		p.playerId = playerid;
-		p.writeToStream(currentClient);
-		ui->serverNewUser(playerid);
+			// +1: local player is not in
+			if(currentClients.size()+1 == PLAYERS) {
+				serverState = GAME_SERVER_STATE_READY;
+			}
+			uint8 playerid = currentClients.size();
+			ServerJoinAckPacket p;
+			p.playerId = playerid;
+			p.writeToStream(currentClient);
+			ui->serverNewUser(playerid);
+		}
 	}
-	// TODO: clients might connect in invalid states!
 	// TODO: clients might disconnect
 	int userid = 0;
 	for(std::list<WiFiClient>::iterator itr = currentClients.begin(); itr!= currentClients.end(); ++itr) {
@@ -65,8 +78,7 @@ void GameServer::doWork() {
 		}
 	}
 
-	if (timeoutms != 0 && timeoutms < millis()) {
-		timeoutms = 0;
+	if (serverState == GAME_SERVER_STATE_RUNNING && timeoutms < millis()) {
 		ServerClientActionLogPacket* p = &*correctSequence.begin();
 		SeverGameOver gov(true, p->playerId, p->stickdir, p->deviceorientation);
 
@@ -120,7 +132,10 @@ GameRound* GameServer::generateGameRound() {
 
 // clicked by user
 void GameServer::startGame() {
-
+	if(serverState != GAME_SERVER_STATE_READY) {
+		Serial.println("got start althought not ready");
+		return;
+	}
 	GameRound* r = generateGameRound();
 	Serial.println("host clicked start");
 
@@ -128,6 +143,7 @@ void GameServer::startGame() {
 
 	std::list<ServerGameStartPacket>::iterator instrItr = r->instructions.begin();
 
+	serverState = GAME_SERVER_STATE_RUNNING;
 	this->timeoutms = instrItr->timeoutseconds*1000 + TIMEOUT_PROP_DELAY_MS + millis();
 	// user0 gets special treatment
 	ui->handleGameStart(&*instrItr);

@@ -8,8 +8,16 @@
 
 #include "AbstractGameServer.h"
 #include "GameRound.h"
-// actual gameserver. runs on host only
 
+
+enum gameserverstate_t
+{
+  GAME_SERVER_STATE_LISTEN,   // waiting for players
+  GAME_SERVER_STATE_READY,    // awaiting start from host
+  GAME_SERVER_STATE_RUNNING  // awaiting user actions, time runs
+};
+
+// actual gameserver. runs on host only
 class GameServer : public AbstractGameServer {
 public:
   GameServer(int port, GameUI* ui)
@@ -28,5 +36,7 @@ private:
   std::list<ServerClientActionLogPacket> correctSequence;
   int currentRound = 1;
   uint32 timeoutms = 0;
+
+  uint8 serverState = GAME_SERVER_STATE_LISTEN;
 };
 #endif
