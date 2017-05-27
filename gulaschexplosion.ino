@@ -126,7 +126,11 @@ void setup() {
     gameUi = new GameUI(status, &badge);
     ui->open(gameUi);
     ServerGameStartPacket s = ServerGameStartPacket(1, "Player 2 must not press any button", 0x222222, 0x44004400, 0x55550000, 0x22222222, 5);
+    ServerClientActionLogPacket l = ServerClientActionLogPacket(STICK_DIR_UP, 0, 2);
+    ServerGameSuccess su = ServerGameSuccess();
     gameUi->handleGameStart(&s);
+    gameUi->handleLogClientAction(&l);
+    gameUi->handleGameSuccess(&su);
     gameUi->setOnPushEnter([]() {
       gameUi->resetLEDs();
       ui->closeCurrent();

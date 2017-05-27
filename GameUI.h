@@ -104,6 +104,7 @@ public:
 
 private:
   String lastPacketMessage;
+  String lastLogMessage;
   unsigned long lastTime = 0;
   uint32_t remainingTime = 0;
   uint16_t remainingVib = 0;

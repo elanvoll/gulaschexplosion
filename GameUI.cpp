@@ -37,6 +37,7 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
         message = "Waiting for Host to start";
         break;
       case GAME_STATE_RUNNING:
+      case GAME_STATE_FINISH:
         message = lastPacketMessage;
         break;
     }
@@ -47,8 +48,13 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
     tft->setTextSize(1);
     tft->setCursor(5, 30);
     tft->print(message);
+
     if (statusOverlay->getGameState() == GAME_STATE_RUNNING) {
-      tft->setCursor(5, 90);
+      tft->drawLine(0, 65, _TFTWIDTH-1, 65, theme->foregroundColor);
+      tft->setCursor(5, 80);
+      tft->print(lastLogMessage);
+      tft->drawLine(0, 100, _TFTWIDTH-1, 100, theme->foregroundColor);
+      tft->setCursor(5, 120);
       char time[10];
       sprintf(time, "%.3f s", remainingTime / 1000.);
       tft->print(time);
@@ -119,6 +125,7 @@ void GameUI::doTime() {
 }
 
 void GameUI::handleGameOver(SeverGameOver* packet) {
+  updateGameState(GAME_STATE_FINISH);
   if (packet->timeout) {
     lastPacketMessage = "Exploded: you took to long";
   } else {
@@ -134,6 +141,7 @@ void GameUI::handleGameOver(SeverGameOver* packet) {
 }
 
 void GameUI::handleGameSuccess(ServerGameSuccess* packet) {
+    updateGameState(GAME_STATE_FINISH);
     lastPacketMessage = "Congratulations";
     dirty = true;
     vib (300);
@@ -144,6 +152,21 @@ void GameUI::handleGameSuccess(ServerGameSuccess* packet) {
     pixels.show();
 }
 void GameUI::handleLogClientAction(ServerClientActionLogPacket* packet) {
-  // TODO: implement me!
-
+  lastLogMessage = "Player " + String(packet->playerId) + " pushed ";
+  switch (packet->stickdir) {
+    case STICK_DIR_UP:
+      lastLogMessage += "up";
+      break;
+    case STICK_DIR_DOWN:
+      lastLogMessage += "down";
+      break;
+    case STICK_DIR_LEFT:
+      lastLogMessage += "left";
+      break;
+    case STICK_DIR_RIGHT:
+      lastLogMessage += "right";
+      break;
+  }
+  vib(100);
+  dirty = true;
 }
