@@ -34,7 +34,7 @@ private:
   WiFiServer server;
   std::list<WiFiClient> currentClients;
   std::list<ServerClientActionLogPacket> correctSequence;
-  int currentRound = 1;
+  int nextGameRound = 1;
   uint32 timeoutms = 0;
 
   uint8 serverState = GAME_SERVER_STATE_LISTEN;

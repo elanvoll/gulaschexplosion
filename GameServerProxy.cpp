@@ -3,10 +3,23 @@
 #include "defines.h"
 
 bool GameServerProxy::begin() {
+
+
+	ui->setOnPushDown(std::bind(&GameServerProxy::userAction, this, STICK_DIR_DOWN));
+	ui->setOnPushUp(std::bind(&GameServerProxy::userAction, this, STICK_DIR_UP));
+	ui->setOnPushLeft(std::bind(&GameServerProxy::userAction, this, STICK_DIR_LEFT));
+	ui->setOnPushRight(std::bind(&GameServerProxy::userAction, this, STICK_DIR_RIGHT));
+
 	if(!client.connect(ip, port)) {
 		return false;
 	}
 	return true;
+}
+
+void GameServerProxy::userAction(uint8 direction) {
+	ClientActionPacket p(direction, 0);
+
+	p.writeToStream(client);
 }
 
 void GameServerProxy::doWork() {

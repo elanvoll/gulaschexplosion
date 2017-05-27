@@ -21,6 +21,7 @@ void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 	correctSequence.pop_front();
 	if(userid != correctAction.playerId || p.stickdir != correctAction.stickdir ) {
 		serverState = GAME_SERVER_STATE_READY;
+		nextGameRound = 1;
 		SeverGameOver gov(false, correctAction.playerId, correctAction.stickdir, correctAction.deviceorientation);
 		ui->handleGameOver(&gov);
 		broadcast(&gov);
@@ -28,6 +29,7 @@ void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 	} else if (correctSequence.size() == 0) {
 		serverState = GAME_SERVER_STATE_READY;
 		ServerGameSuccess p;
+		nextGameRound++;
 
 		ui->handleGameSuccess(&p);
 		broadcast(&p);
@@ -79,6 +81,7 @@ void GameServer::doWork() {
 	}
 
 	if (serverState == GAME_SERVER_STATE_RUNNING && timeoutms < millis()) {
+		serverState = GAME_SERVER_STATE_READY;
 		ServerClientActionLogPacket* p = &*correctSequence.begin();
 		SeverGameOver gov(true, p->playerId, p->stickdir, p->deviceorientation);
 
@@ -124,7 +127,7 @@ GameRound* GameServer::generateGameRound() {
 	std::list<ServerClientActionLogPacket> correctSeq;
 	correctSeq.push_back(ServerClientActionLogPacket(STICK_DIR_UP, 0, 1));
 
-	switch(currentRound) {
+	switch(nextGameRound) {
 		case 1:
 		return new GameRound(instructions, correctSeq);
 	}
