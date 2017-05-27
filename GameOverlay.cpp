@@ -9,7 +9,9 @@ void GameOverlay::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint1
     tft->setCursor(0, 7);
     tft->setTextSize(1);
     tft->setFont(&Org_01);
-    tft->print(APP_NAME);
+    if (remainingTime != NULL && gameState == GAME_STATE_RUNNING) {
+      tft->print(*remainingTime);
+    }
     tft->setCursor(80, 7);
 //    switch(this->gameState)
     //tft->printf("Bat: %d%%", std::max(std::min(int((bat-batCritical)/float(batFull-batCritical)*100), 100),0));

@@ -125,18 +125,27 @@ void setup() {
   }));
 
   mainMenu->addMenuItem(new MenuItem("Dumnmy Start", []() {
+    if (gameUi != NULL) {
+      delete gameUi;
+      gameUi = NULL;
+    }
     gameUi = new GameUI(status, &badge);
     ui->open(gameUi);
     ServerGameStartPacket s = ServerGameStartPacket(1, "Player 2 must not press any button", 0x222222, 0x44004400, 0x55550000, 0x22222222, 5);
     ServerClientActionLogPacket l = ServerClientActionLogPacket(STICK_DIR_UP, 0, 2);
     ServerGameSuccess su = ServerGameSuccess();
     gameUi->handleGameStart(&s);
-    gameUi->handleLogClientAction(&l);
-    gameUi->handleGameSuccess(&su);
+    //gameUi->handleLogClientAction(&l);
+    //gameUi->handleGameSuccess(&su);
     gameUi->setOnPushEnter([]() {
+      Serial.println("in enter");
       gameUi->resetLEDs();
-      ui->closeCurrent();
-    });
+      UIElement* old = ui->head;
+      if(old->parent) {
+        ui->head = old->parent;
+        ui->draw();
+      }
+      });
   }));
   ui->open(mainMenu);
 }
@@ -255,15 +264,17 @@ void receiveGameInformation() {
 			Serial.println("PSK: " + psk);
 			Serial.println("Version: " + version);
 
+      badge.setGPIO(IR_EN, LOW);
+    	Serial.println("Exiting receive mode");
+
 			if (strcmp(version.c_str(), APP_VERSION) != 0) {
 				showVersionErrorScreen(version);
 			} else {
 				connectToWifi(ssid, psk);
 			}
 		}
+    badge.setGPIO(IR_EN, LOW);
 	}
-	badge.setGPIO(IR_EN, LOW);
-	Serial.println("Exiting receive mode");
 }
 
 void connectToWifi(String ssid, String psk) {

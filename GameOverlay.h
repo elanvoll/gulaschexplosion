@@ -33,9 +33,21 @@ public:
     return this->playerId;
   }
 
+  void setRemainingTime(uint32_t time) {
+    char t[10];
+    sprintf(t, "%.3f", time / 1000.);
+    remainingTime = new String(t);
+    if (--cdrender == 0 || time == 0) {
+      cdrender = 5;
+      dirty = true;
+    }
+  }
+
   uint16_t getOffsetX();
   uint16_t getOffsetY();
 private:
+  String* remainingTime = NULL;
+  uint8_t cdrender = 5;
   uint8_t playerId;
   game_state_t gameState;
   bool dirty = true;

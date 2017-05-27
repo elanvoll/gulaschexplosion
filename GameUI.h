@@ -29,6 +29,7 @@ public:
     } else if (statusOverlay->getGameState() == GAME_STATE_RUNNING){
       switch (state) {
         case JoystickState::BTN_ENTER:
+          Serial.println("Enter");
           if (onEnter) onEnter();
           break;
         case JoystickState::BTN_LEFT:

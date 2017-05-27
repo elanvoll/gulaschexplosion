@@ -55,9 +55,9 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
       tft->print(lastLogMessage);
       tft->drawLine(0, 100, _TFTWIDTH-1, 100, theme->foregroundColor);
       tft->setCursor(5, 120);
-      char time[10];
-      sprintf(time, "%.3f s", remainingTime / 1000.);
-      tft->print(time);
+      // char time[10];
+      // sprintf(time, "%.3f s", remainingTime / 1000.);
+      // tft->print(time);
     }
     this->dirty = false;
 }
@@ -85,11 +85,11 @@ void GameUI::resetLEDs() {
 }
 
 void GameUI::vib(uint16_t millis) {
+  Serial.println(statusOverlay->getGameState());
   remainingVib = millis;
 }
 
 void GameUI::handleGameStart(ServerGameStartPacket* packet) {
-  Serial.println("Start");
   updateGameState(GAME_STATE_RUNNING);
   lastPacketMessage = String(packet->text);
   setLED(0, packet->led1);
@@ -106,21 +106,23 @@ void GameUI::doTime() {
   if (last == 0) {
     return;
   }
+
   unsigned long diff = lastTime - last;
   if (remainingTime > 0 && remainingTime > diff) {
     remainingTime = remainingTime - diff;
-    dirty = true;
+    statusOverlay->setRemainingTime(remainingTime);
   } else if (remainingTime > 0) {
     remainingTime = 0;
-    dirty = true;
+    statusOverlay->setRemainingTime(remainingTime);
   }
 
   if (remainingVib > 0 && remainingVib > diff) {
+    Serial.println(remainingVib);
     remainingVib = remainingVib - diff;
-    badge->setGPIO(VIBRATOR, HIGH);
+    badge->setVibrator(true);
   } else if (remainingVib > 0) {
     remainingVib = 0;
-    badge->setGPIO(VIBRATOR, LOW);
+    badge->setVibrator(false);
   }
 }
 
