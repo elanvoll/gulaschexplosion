@@ -41,6 +41,7 @@ void hostgame() {
 	delay(100);
 	WiFi.mode(WIFI_AP_STA);
 	WiFi.softAPConfig(HOST_IP, HOST_IP, IPAddress(255, 255, 255, 0));
+	delay(30);
 	char randpw[20];
 	char ssid[20];
 	int seed = millis();
@@ -52,6 +53,7 @@ void hostgame() {
 	sprintf(randpw, "%d", random(10000000, 100000000)); // TODO richtig machen
 	sprintf(ssid, "ESP%d", ESP.getChipId());
 	WiFi.softAP(ssid, randpw);
+	delay(30);
 	char buffer[41];
 	sprintf(buffer, "%s\t%s\t%s\n", ssid, randpw, APP_VERSION);
 	shareString = String(buffer);

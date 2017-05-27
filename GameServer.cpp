@@ -43,6 +43,7 @@ void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 void GameServer::doWork() {
 	WiFiClient currentClient = server.available();
 	if (currentClient && currentClient.connected())  {
+		currentClient.setNoDelay(true);
 		Serial.println("User joined");
 		if(serverState != GAME_SERVER_STATE_LISTEN) {
 			Serial.println("Got new player in wrong state");
@@ -50,7 +51,7 @@ void GameServer::doWork() {
 		} else {
 			currentClients.push_back(currentClient);
 
-			// +1: local player is not in
+			// +1: local player is not in currentClients
 			if(currentClients.size()+1 == PLAYERS) {
 				serverState = GAME_SERVER_STATE_READY;
 			}
@@ -65,6 +66,9 @@ void GameServer::doWork() {
 	int userid = 0;
 	for(std::list<WiFiClient>::iterator itr = currentClients.begin(); itr!= currentClients.end(); ++itr) {
 		userid ++;
+		if(!itr->connected()) {
+			Serial.printf("WARN: playerid=%d is disconnected", userid);
+		}
 		if(itr->available()) {
 			Serial.print("Got data from client: ");
 			int packetType = itr->read();

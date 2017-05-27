@@ -11,8 +11,10 @@ bool GameServerProxy::begin() {
 	ui->setOnPushRight(std::bind(&GameServerProxy::userAction, this, STICK_DIR_RIGHT));
 
 	if(!client.connect(ip, port)) {
+		Serial.println("couldn't connect to server");
 		return false;
 	}
+	client.setNoDelay(true);
 	return true;
 }
 
