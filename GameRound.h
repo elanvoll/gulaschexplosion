@@ -2,7 +2,12 @@
 
 #define _INC_GAME_ROUND_H
 
+#include <list>
 
+#include <stdint.h>
+
+
+#include "Packets.h"
 
 enum deviceorientation
 {
@@ -10,12 +15,6 @@ enum deviceorientation
 	Headup,
 	Horizontal,
 	headfirst
-};
-
-class UserAction
-{
-	JoystickState joystick;
-
 };
 
 class GameRound

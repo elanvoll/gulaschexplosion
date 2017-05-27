@@ -1,0 +1,28 @@
+#pragma once
+
+#include <stdint.h>
+
+typedef uint32_t uint32;
+
+
+class GameRound;
+
+struct GameColor {
+	const char* name;
+	uint32 value;
+};
+
+struct GameStickDir {
+	const char* name;
+	int stickdir;
+};
+
+struct GameRoundGenerator
+{
+	static GameRound* newRound(int gameRound);
+	static GameRound* genTrivialRound();
+
+	// helpers
+	static GameColor getRandomGameColor();
+	static GameStickDir getRandomStickDir();
+};

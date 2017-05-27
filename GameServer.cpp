@@ -2,6 +2,9 @@
 
 #include "defines.h"
 
+#include "GameRoundGenerator.h"
+
+
 void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 	if (serverState != GAME_SERVER_STATE_RUNNING) {
 		Serial.println("got client interaction while game is not running");
@@ -27,6 +30,7 @@ void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 		broadcast(&gov);
 		server.close();
 	} else if (correctSequence.size() == 0) {
+		Serial.println("game successfully ended");
 		serverState = GAME_SERVER_STATE_READY;
 		ServerGameSuccess p;
 		nextGameRound++;
@@ -119,18 +123,7 @@ void GameServer::begin() {
 }
 
 GameRound* GameServer::generateGameRound() {
-	std::list<ServerGameStartPacket> instructions;
-	instructions.push_back(ServerGameStartPacket(1, "Player 2 must not press any button", 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
-	instructions.push_back(ServerGameStartPacket(1, "One player has to select green", 0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
-	instructions.push_back(ServerGameStartPacket(1, "If there is red, select it first", 0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 20));
-	// richtig: player 1 geht zu led1 = oben
-	std::list<ServerClientActionLogPacket> correctSeq;
-	correctSeq.push_back(ServerClientActionLogPacket(STICK_DIR_UP, 0, 1));
-
-	switch(nextGameRound) {
-		case 1:
-		return new GameRound(instructions, correctSeq);
-	}
+	return GameRoundGenerator::newRound(this->nextGameRound);
 }
 
 // clicked by user
@@ -162,7 +155,7 @@ void GameServer::startGame() {
 	}
 	if(instrItr != r->instructions.end() || userItr != currentClients.end())
 		Serial.println("ERROR: instruction count doesn't match user number");
-	// CRITICAL! set timer
+	delete r;
 }
 
 GameServer::~GameServer() {
