@@ -70,6 +70,63 @@ void setLedColor(int led, GameColor* color, ServerGameStartPacket* packet) {
 	*addr = color->value;
 }
 
+
+GameRound* GameRoundGenerator::genTrivialSwitchRound() {
+	// this has to be clicked
+	GameColor correctColor = getRandomGameColor();
+	// this is written, error
+	GameColor mentionedColor = getRandomGameColorExcept(&correctColor, 1);
+
+	GameStickDir correctStickDir = getRandomStickDir();
+	uint8 correctActingPlayerId = rand() % PLAYERS;
+	uint8 correctMessagePlayerId = rand() % PLAYERS;
+	uint8 outingPlayerId = rand() % PLAYERS;
+	if (outingPlayerId == correctMessagePlayerId) {
+		outingPlayerId++;
+		outingPlayerId %= PLAYERS;
+	}
+
+	const int reserverdColorNum = 3;
+	const int timeoutseconds = 10;
+
+	GameColor reserverdColor[reserverdColorNum];
+	reserverdColor[0] = correctColor;
+	for(int i=1; i<reserverdColorNum; ++i) {
+		reserverdColor[i] = getRandomGameColor();
+	}
+
+	std::list<ServerGameStartPacket> instructions;
+	for(int playerId=0; playerId<PLAYERS; ++playerId) {
+		char buf[40];
+		const char* format = "Press %s if available.";
+		if(correctMessagePlayerId == playerId) {
+			sprintf(buf, format, mentionedColor.name);
+		} else if(outingPlayerId == playerId) {
+			sprintf(buf, "Player %i means %s instead of %s.", correctMessagePlayerId, correctColor.name, mentionedColor.name);
+		} else {
+			sprintf(buf, format, reserverdColor[rand()%reserverdColorNum].name);
+		}
+		ServerGameStartPacket playerPacket;
+		playerPacket.timeoutseconds = timeoutseconds;
+		playerPacket.text = String(buf);
+		for(int led = 1; led <= 4; ++led) {
+			if (playerId == correctActingPlayerId &&
+				ledToDir(led) == correctStickDir.stickdir) {
+				setLedColor(led, &correctColor, &playerPacket);
+			} else {
+				GameColor faultycolor = getRandomGameColorExcept(reserverdColor, reserverdColorNum);
+				setLedColor(led, &faultycolor, &playerPacket);
+			}
+		}
+		instructions.push_back(playerPacket);
+	}
+
+	std::list<ServerClientActionLogPacket> correctSeq;
+	correctSeq.push_back(ServerClientActionLogPacket(correctStickDir.stickdir, 0, correctActingPlayerId));
+	return new GameRound(instructions, correctSeq);
+}
+
+
 GameRound* GameRoundGenerator::genTrivialRound() {
 	GameColor correctColor = getRandomGameColor();
 	GameStickDir correctStickDir = getRandomStickDir();
@@ -115,7 +172,16 @@ GameRound* GameRoundGenerator::genTrivialRound() {
 }
 
 GameRound* GameRoundGenerator::newRound(int gameRound) {
-	GameRound *r = genTrivialRound();
+	GameRound *r = NULL;
+	if (gameRound <= 3)
+		r = genTrivialRound();
+	else if(gameRound > 3 && gameRound <= 9) {
+		if(rand()%2) {
+			r = genTrivialRound();
+		} else {
+			r = genTrivialSwitchRound();
+		}
+	}
 
 
 	for(auto itr = r->instructions.begin(); itr != r->instructions.end(); ++itr) {
