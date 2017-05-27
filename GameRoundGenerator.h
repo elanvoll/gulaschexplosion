@@ -24,5 +24,6 @@ struct GameRoundGenerator
 
 	// helpers
 	static GameColor getRandomGameColor();
+	static GameColor getRandomGameColorExcept(GameColor* retricted, int len);
 	static GameStickDir getRandomStickDir();
 };
