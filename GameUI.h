@@ -22,6 +22,10 @@ public:
       if(state == JoystickState::BTN_ENTER) {
         onStart();
       }
+    } else if (statusOverlay->getGameState() == GAME_STATE_FINISH) {
+      if (state == JoystickState::BTN_ENTER) {
+        if (onContinue) onContinue();
+      }
     } else if (statusOverlay->getGameState() == GAME_STATE_RUNNING){
       switch (state) {
         case JoystickState::BTN_ENTER:
@@ -45,11 +49,18 @@ public:
 
   void updateGameState(game_state_t t) {
     statusOverlay->updateGameState(t);
+    badge->setVibrator(true);
+    delay(42);
+    badge->setVibrator(false);
     dirty = true;
   }
 
   void setOnGameStart(std::function<void()> onStart) {
     this->onStart = onStart;
+  }
+
+  void setOnContinue(std::function<void()> onContinue) {
+    this->onContinue = onContinue;
   }
 
   void setOnPushEnter(std::function<void()> onEnter) {
@@ -103,6 +114,7 @@ private:
   uint8_t playerCount = 0;
   bool dirty = true;
   std::function<void()> onStart;
+  std::function<void()> onContinue;
   std::function<void()> onEnter;
   std::function<void()> onLeft;
   std::function<void()> onRight;

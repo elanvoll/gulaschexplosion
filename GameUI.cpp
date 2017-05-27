@@ -134,8 +134,14 @@ void GameUI::handleGameOver(SeverGameOver* packet) {
 }
 
 void GameUI::handleGameSuccess(ServerGameSuccess* packet) {
-    // TODO: implement me!
-
+    lastPacketMessage = "Congratulations";
+    dirty = true;
+    vib (300);
+    setLED(0, 0xFF00FF00);
+    setLED(1, 0xFF00FF00);
+    setLED(2, 0xFF00FF00);
+    setLED(3, 0xFF00FF00);
+    pixels.show();
 }
 void GameUI::handleLogClientAction(ServerClientActionLogPacket* packet) {
   // TODO: implement me!

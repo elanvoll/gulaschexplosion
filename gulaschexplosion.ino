@@ -98,6 +98,18 @@ void setup() {
     ui->open(gameUi);
   }));
 
+  mainMenu->addMenuItem(new MenuItem("Du Success", []() {
+    gameUi = new GameUI(status, &badge);
+    ui->open(gameUi);
+    gameUi->updateGameState(GAME_STATE_RUNNING);
+    ServerGameSuccess s = ServerGameSuccess();
+    gameUi->handleGameSuccess(&s);
+    gameUi->setOnPushEnter([]() {
+      gameUi->resetLEDs();
+      ui->closeCurrent();
+    });
+  }));
+
   mainMenu->addMenuItem(new MenuItem("Du Game Over", []() {
     gameUi = new GameUI(status, &badge);
     ui->open(gameUi);
@@ -249,9 +261,6 @@ void receiveGameInformation() {
 
 void connectToWifi(String ssid, String psk) {
   gameUi->updateGameState(GAME_STATE_CONNECTING_WIFI);
-  badge.setVibrator(true);
-  delay(42);
-  badge.setVibrator(false);
   ui->draw();
 	WiFi.begin(ssid.c_str(), psk.c_str()); // quick fix.. chnage in js
   Serial.printf("Trying connect to %s...\n", ssid.c_str());
