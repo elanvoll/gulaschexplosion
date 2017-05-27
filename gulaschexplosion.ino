@@ -155,6 +155,7 @@ void loop() {
     case GAME_STATE_HOST_AWAIT_START:
     case GAME_STATE_CLIENT_AWAIT_START:
     case GAME_STATE_RUNNING:
+    case GAME_STATE_FINISH:
       if (gameServer != NULL) {
         gameServer->doWork();
       }

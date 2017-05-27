@@ -34,6 +34,7 @@ GameRound* GameRoundGenerator::newRound(int gameRound) {
 
 	switch(gameRound) {
 		case 1:
+		default:
 		return new GameRound(instructions, correctSeq);
 	}
 }

@@ -28,7 +28,6 @@ void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 		SeverGameOver gov(false, correctAction.playerId, correctAction.stickdir, correctAction.deviceorientation);
 		ui->handleGameOver(&gov);
 		broadcast(&gov);
-		server.close();
 	} else if (correctSequence.size() == 0) {
 		Serial.println("game successfully ended");
 		serverState = GAME_SERVER_STATE_READY;
@@ -37,7 +36,6 @@ void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 
 		ui->handleGameSuccess(&p);
 		broadcast(&p);
-		server.close();
 		timeoutms = 0;
 	}
 }
@@ -91,7 +89,6 @@ void GameServer::doWork() {
 
 		ui->handleGameOver(&gov);
 		broadcast(&gov);
-		server.close();
 	}
 }
 
@@ -109,6 +106,7 @@ void GameServer::userActionHost(uint8 direction) {
 
 void GameServer::begin() {
 	ui->setOnGameStart(std::bind(&GameServer::startGame, this));
+	ui->setOnContinue(std::bind(&GameServer::startGame, this));
 
 	ui->setOnPushDown(std::bind(&GameServer::userActionHost, this, STICK_DIR_DOWN));
 	ui->setOnPushUp(std::bind(&GameServer::userActionHost, this, STICK_DIR_UP));
