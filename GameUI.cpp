@@ -21,7 +21,7 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
     String message;
     switch(this->statusOverlay->getGameState()) {
       case GAME_STATE_SHARING_ACCESS: {
-        message = "Awaiting more players to connect\n" + String(playerCount) + "/" + String(PLAYERS);
+        message = "Awaiting more players to connect\nHold clients to IR sender\n" + String(playerCount) + "/" + String(PLAYERS);
         break;
       }
       case GAME_STATE_HOST_AWAIT_START:

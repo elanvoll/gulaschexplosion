@@ -6,6 +6,12 @@
 #include "Packets.h"
 
 
+#ifdef DEBUG_BUILD
+#define TIMEOUTSECONDS 50
+#else
+#define TIMEOUTSECONDS 10
+#endif
+
 GameColor allGameColors[] = { {"green", 0x008000}, {"dark", 0x000000},
     {"red", 0x800000}, {"blue", 0x000080}, {"white", 0x808080}, {"yellow", 0x808000},
 	{"purple", 0x800080}};
@@ -72,6 +78,7 @@ void setLedColor(int led, GameColor* color, ServerGameStartPacket* packet) {
 
 
 GameRound* GameRoundGenerator::genTrivialSwitchRound() {
+	Serial.println("genTrivialSwitchRound");
 	// this has to be clicked
 	GameColor correctColor = getRandomGameColor();
 	// this is written, error
@@ -87,7 +94,6 @@ GameRound* GameRoundGenerator::genTrivialSwitchRound() {
 	}
 
 	const int reserverdColorNum = 3;
-	const int timeoutseconds = 10;
 
 	GameColor reserverdColor[reserverdColorNum];
 	reserverdColor[0] = correctColor;
@@ -97,7 +103,7 @@ GameRound* GameRoundGenerator::genTrivialSwitchRound() {
 
 	std::list<ServerGameStartPacket> instructions;
 	for(int playerId=0; playerId<PLAYERS; ++playerId) {
-		char buf[40];
+		char buf[80];
 		const char* format = "Press %s if available.";
 		if(correctMessagePlayerId == playerId) {
 			sprintf(buf, format, mentionedColor.name);
@@ -107,7 +113,7 @@ GameRound* GameRoundGenerator::genTrivialSwitchRound() {
 			sprintf(buf, format, reserverdColor[rand()%reserverdColorNum].name);
 		}
 		ServerGameStartPacket playerPacket;
-		playerPacket.timeoutseconds = timeoutseconds;
+		playerPacket.timeoutseconds = TIMEOUTSECONDS;
 		playerPacket.text = String(buf);
 		for(int led = 1; led <= 4; ++led) {
 			if (playerId == correctActingPlayerId &&
@@ -128,6 +134,7 @@ GameRound* GameRoundGenerator::genTrivialSwitchRound() {
 
 // REQUIRES 3 Players
 GameRound* GameRoundGenerator::genLyingSwitchRound() {
+	Serial.println("genLyingSwitchRound");
 	if(PLAYERS < 3) {
 		Serial.println("CANT GEN LYING SWITCH WITH < 3 PLAYERS!");
 		return genTrivialSwitchRound();
@@ -150,7 +157,6 @@ GameRound* GameRoundGenerator::genLyingSwitchRound() {
 	}
 
 	const int reserverdColorNum = 3;
-	const int timeoutseconds = 10;
 
 	GameColor reserverdColor[reserverdColorNum];
 	reserverdColor[0] = correctColor;
@@ -160,7 +166,7 @@ GameRound* GameRoundGenerator::genLyingSwitchRound() {
 
 	std::list<ServerGameStartPacket> instructions;
 	for(int playerId=0; playerId<PLAYERS; ++playerId) {
-		char buf[40];
+		char buf[80];
 		const char* format = "Press %s if available.";
 		if(correctMessagePlayerId == playerId) {
 			sprintf(buf, format, correctColor.name);
@@ -172,7 +178,7 @@ GameRound* GameRoundGenerator::genLyingSwitchRound() {
 			sprintf(buf, format, reserverdColor[rand()%reserverdColorNum].name);
 		}
 		ServerGameStartPacket playerPacket;
-		playerPacket.timeoutseconds = timeoutseconds;
+		playerPacket.timeoutseconds = TIMEOUTSECONDS;
 		playerPacket.text = String(buf);
 		for(int led = 1; led <= 4; ++led) {
 			if (playerId == correctActingPlayerId &&
@@ -193,13 +199,19 @@ GameRound* GameRoundGenerator::genLyingSwitchRound() {
 
 
 GameRound* GameRoundGenerator::genTrivialMisleadingSwitchRound() {
+	Serial.println("genTrivialMisleadingSwitchRound");
 	GameColor correctColor = getRandomGameColor();
 	GameStickDir correctStickDir = getRandomStickDir();
 	uint8 correctActingPlayerId = rand() % PLAYERS;
 	uint8 correctMessagePlayerId = rand() % PLAYERS;
 
+	uint8 misleadingSwitchPlayerId = rand() % PLAYERS;
+	if(misleadingSwitchPlayerId == correctMessagePlayerId) {
+		++misleadingSwitchPlayerId;
+		misleadingSwitchPlayerId %= PLAYERS;
+	}
+
 	const int reserverdColorNum = 3;
-	const int timeoutseconds = 10;
 
 	GameColor reserverdColor[reserverdColorNum];
 	reserverdColor[0] = correctColor;
@@ -209,21 +221,20 @@ GameRound* GameRoundGenerator::genTrivialMisleadingSwitchRound() {
 
 	std::list<ServerGameStartPacket> instructions;
 	for(int playerId=0; playerId<PLAYERS; ++playerId) {
-		char buf[40];
+		char buf[80];
 		const char* format = "Press %s if available.";
 		if(correctMessagePlayerId == playerId) {
 			sprintf(buf, format, correctColor.name);
-		} else {
-			if(rand() % 2)
-				sprintf(buf, format, reserverdColor[rand()%reserverdColorNum].name);
-			else
-				// this will always be misleading
-				sprintf(buf, "Player %i means %s instead of %s.",
-					rand()%PLAYERS, reserverdColor[(rand()%(reserverdColorNum-1))+1].name,
-					reserverdColor[(rand()%(reserverdColorNum-1))+1].name);
+		} else if(misleadingSwitchPlayerId == playerId){
+			// this will always be misleading
+			sprintf(buf, "Player %i means %s instead of %s.",
+				rand()%PLAYERS, reserverdColor[(rand()%(reserverdColorNum-1))+1].name,
+				reserverdColor[(rand()%(reserverdColorNum-1))+1].name);
+		}else{
+			sprintf(buf, format, reserverdColor[rand()%reserverdColorNum].name);
 		}
 		ServerGameStartPacket playerPacket;
-		playerPacket.timeoutseconds = timeoutseconds;
+		playerPacket.timeoutseconds = TIMEOUTSECONDS;
 		playerPacket.text = String(buf);
 		for(int led = 1; led <= 4; ++led) {
 			if (playerId == correctActingPlayerId &&
@@ -244,13 +255,13 @@ GameRound* GameRoundGenerator::genTrivialMisleadingSwitchRound() {
 
 
 GameRound* GameRoundGenerator::genTrivialRound() {
+	Serial.println("genTrivialRound");
 	GameColor correctColor = getRandomGameColor();
 	GameStickDir correctStickDir = getRandomStickDir();
 	uint8 correctActingPlayerId = rand() % PLAYERS;
 	uint8 correctMessagePlayerId = rand() % PLAYERS;
 
 	const int reserverdColorNum = 3;
-	const int timeoutseconds = 10;
 
 	GameColor reserverdColor[reserverdColorNum];
 	reserverdColor[0] = correctColor;
@@ -260,7 +271,7 @@ GameRound* GameRoundGenerator::genTrivialRound() {
 
 	std::list<ServerGameStartPacket> instructions;
 	for(int playerId=0; playerId<PLAYERS; ++playerId) {
-		char buf[40];
+		char buf[80];
 		const char* format = "Press %s if available.";
 		if(correctMessagePlayerId == playerId) {
 			sprintf(buf, format, correctColor.name);
@@ -268,7 +279,7 @@ GameRound* GameRoundGenerator::genTrivialRound() {
 			sprintf(buf, format, reserverdColor[rand()%reserverdColorNum].name);
 		}
 		ServerGameStartPacket playerPacket;
-		playerPacket.timeoutseconds = timeoutseconds;
+		playerPacket.timeoutseconds = TIMEOUTSECONDS;
 		playerPacket.text = String(buf);
 		for(int led = 1; led <= 4; ++led) {
 			if (playerId == correctActingPlayerId &&
@@ -288,6 +299,11 @@ GameRound* GameRoundGenerator::genTrivialRound() {
 }
 
 void strrevMutation(GameRound *r) {
+	Serial.println("strrevMutation");
+	if(r == NULL) {
+		Serial.println("Cant mutate empty round?!");
+		return;
+	}
 	for(std::list<ServerGameStartPacket>::iterator itr = r->instructions.begin(); itr != r->instructions.end(); ++itr) {
 		if(rand()%2 == 0) {
 			String tmp;
@@ -302,7 +318,7 @@ void strrevMutation(GameRound *r) {
 GameRound* GameRoundGenerator::newRound(int gameRound) {
 	GameRound *r = NULL;
 #ifdef DEBUG_BUILD
-	switch(gameRound-1 % 4) {
+	switch((gameRound-1) % 4) {
 		case 0:
 		r = genTrivialRound();
 		break;
@@ -316,11 +332,11 @@ GameRound* GameRoundGenerator::newRound(int gameRound) {
 		r = genLyingSwitchRound();
 		break;
 	}
-	switch(gameRound-1 % 8) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
+	switch((gameRound-1) % 8) {
+		case 4:
+		case 5:
+		case 6:
+		case 7:
 		strrevMutation(r);
 	}
 #else
@@ -370,6 +386,7 @@ GameRound* GameRoundGenerator::newRound(int gameRound) {
 			break;
 			case 3:
 			r = genLyingSwitchRound();
+			break;
 		}
 		if((rand() % 3) == 0)
 			strrevMutation(r);
