@@ -14,7 +14,7 @@
 
 GameColor allGameColors[] = { {"green", 0x008000}, {"dark", 0x000000},
     {"red", 0x800000}, {"blue", 0x000080}, {"white", 0x808080}, {"yellow", 0x808000},
-	{"purple", 0x800080}};
+	{"pink", 0x800040}};
 
 GameStickDir allStickDirs[] = { {"up", STICK_DIR_UP}, {"down", STICK_DIR_DOWN}, {"left", STICK_DIR_LEFT}, {"right", STICK_DIR_RIGHT}};
 
