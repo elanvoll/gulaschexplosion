@@ -33,9 +33,18 @@ public:
     return this->playerId;
   }
 
+  void setRound(uint32_t round) {
+    char t[10];
+    sprintf(t, "Round %d", round);
+    delete sRound;
+    sRound = new String(t);
+    dirty = true;
+  }
+
   void setRemainingTime(uint32_t time) {
     char t[10];
     sprintf(t, "%.3f", time / 1000.);
+    delete remainingTime;
     remainingTime = new String(t);
     if (--cdrender == 0 || time == 0) {
       cdrender = 5;
@@ -47,6 +56,7 @@ public:
   uint16_t getOffsetY();
 private:
   String* remainingTime = NULL;
+  String* sRound = NULL;
   uint8_t cdrender = 5;
   uint8_t playerId;
   game_state_t gameState;

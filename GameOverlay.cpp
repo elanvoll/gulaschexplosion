@@ -12,6 +12,10 @@ void GameOverlay::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint1
     if (remainingTime != NULL && gameState == GAME_STATE_RUNNING) {
       tft->print(*remainingTime);
     }
+    if (sRound != NULL && (gameState == GAME_STATE_RUNNING || gameState == GAME_STATE_FINISH)) {
+      tft->setCursor(40, 7);
+      tft->print(*sRound);
+    }
     tft->setCursor(80, 7);
 //    switch(this->gameState)
     //tft->printf("Bat: %d%%", std::max(std::min(int((bat-batCritical)/float(batFull-batCritical)*100), 100),0));

@@ -91,6 +91,7 @@ void GameUI::vib(uint16_t millis) {
 
 void GameUI::handleGameStart(ServerGameStartPacket* packet) {
   updateGameState(GAME_STATE_RUNNING);
+  statusOverlay->setRound(packet->gameround);
   lastPacketMessage = String(packet->text);
   setLED(0, packet->led1);
   setLED(1, packet->led2);
@@ -117,7 +118,6 @@ void GameUI::doTime() {
   }
 
   if (remainingVib > 0 && remainingVib > diff) {
-    Serial.println(remainingVib);
     remainingVib = remainingVib - diff;
     badge->setVibrator(true);
   } else if (remainingVib > 0) {
