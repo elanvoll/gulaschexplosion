@@ -14,7 +14,7 @@ bool GameServerProxy::begin() {
 		Serial.println("couldn't connect to server");
 		return false;
 	}
-	client.setNoDelay(true);
+//	client.setNoDelay(true);
 	return true;
 }
 

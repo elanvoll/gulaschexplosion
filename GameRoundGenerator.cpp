@@ -175,7 +175,7 @@ GameRound* GameRoundGenerator::newRound(int gameRound) {
 	GameRound *r = NULL;
 	if (gameRound <= 3)
 		r = genTrivialRound();
-	else if(gameRound > 3 && gameRound <= 9) {
+	else if(gameRound > 3) {
 		if(rand()%2) {
 			r = genTrivialRound();
 		} else {
@@ -184,6 +184,9 @@ GameRound* GameRoundGenerator::newRound(int gameRound) {
 	}
 
 
+	if(!r) {
+		Serial.println("Round generation failed, will die");
+	}
 	for(auto itr = r->instructions.begin(); itr != r->instructions.end(); ++itr) {
 		itr->gameround = gameRound;
 	}
