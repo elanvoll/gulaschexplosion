@@ -137,10 +137,10 @@ void GameUI::handleGameOver(SeverGameOver* packet) {
   }
   dirty = true;
   vib(500);
-  setLED(0, 0xFFFF0000);
-  setLED(1, 0xFFFF0000);
-  setLED(2, 0xFFFF0000);
-  setLED(3, 0xFFFF0000);
+  setLED(0, 0xFF800000);
+  setLED(1, 0xFF800000);
+  setLED(2, 0xFF800000);
+  setLED(3, 0xFF800000);
   pixels.show();
 }
 
@@ -149,10 +149,10 @@ void GameUI::handleGameSuccess(ServerGameSuccess* packet) {
     lastPacketMessage = "Congratulations";
     dirty = true;
     vib (300);
-    setLED(0, 0xFF00FF00);
-    setLED(1, 0xFF00FF00);
-    setLED(2, 0xFF00FF00);
-    setLED(3, 0xFF00FF00);
+    setLED(0, 0xFF008000);
+    setLED(1, 0xFF008000);
+    setLED(2, 0xFF008000);
+    setLED(3, 0xFF008000);
     pixels.show();
 }
 void GameUI::handleLogClientAction(ServerClientActionLogPacket* packet) {

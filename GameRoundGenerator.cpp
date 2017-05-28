@@ -155,6 +155,7 @@ GameRound* GameRoundGenerator::genLyingSwitchRound() {
 		youLiedPlayerId++;
 		youLiedPlayerId %= PLAYERS;
 	}
+	Serial.printf("players: cormess %i, switch %i, lie! %i\n", correctMessagePlayerId, playerSwitchedMsgPlayerId, youLiedPlayerId);
 
 	const int reserverdColorNum = 3;
 
@@ -171,7 +172,7 @@ GameRound* GameRoundGenerator::genLyingSwitchRound() {
 		if(correctMessagePlayerId == playerId) {
 			sprintf(buf, format, correctColor.name);
 		} else if(playerSwitchedMsgPlayerId == playerId) {
-			sprintf(buf, "Player %i means %s instead of %s.",correctMessagePlayerId, getRandomGameColor(), correctColor.name);
+			sprintf(buf, "Player %i means %s instead of %s.",correctMessagePlayerId, getRandomGameColor().name, correctColor.name);
 		} else if(youLiedPlayerId == playerId) {
 			sprintf(buf, "Player %i is not telling the truth.", playerSwitchedMsgPlayerId);
 		} else {
@@ -298,6 +299,12 @@ GameRound* GameRoundGenerator::genTrivialRound() {
 	return new GameRound(instructions, correctSeq);
 }
 
+void setTimeout(GameRound *r, uint32 timeoutseconds) {
+	for(std::list<ServerGameStartPacket>::iterator itr = r->instructions.begin(); itr != r->instructions.end(); ++itr) {
+		itr->timeoutseconds = timeoutseconds;
+	}
+}
+
 void strrevMutation(GameRound *r) {
 	Serial.println("strrevMutation");
 	if(r == NULL) {
@@ -318,6 +325,7 @@ void strrevMutation(GameRound *r) {
 GameRound* GameRoundGenerator::newRound(int gameRound) {
 	GameRound *r = NULL;
 #ifdef DEBUG_BUILD
+
 	switch((gameRound-1) % 4) {
 		case 0:
 		r = genTrivialRound();
@@ -340,25 +348,31 @@ GameRound* GameRoundGenerator::newRound(int gameRound) {
 		strrevMutation(r);
 	}
 #else
-	if (gameRound <= 3)
+	if (gameRound <= 3) {
 		r = genTrivialRound();
-	else if(gameRound <= 5) {
+		setTimeout(r, 30 - gameRound*5);
+	}
+	else if(gameRound <= 7) {
 		if(rand()%2) {
 			r = genTrivialRound();
+			setTimeout(r, 10);
 		} else {
 			r = genTrivialSwitchRound();
+			setTimeout(r, 20);
 		}
 	}
-	else if(gameRound <= 9) {
+	else if(gameRound <= 12) {
 		if(rand()%2) {
 			r = genTrivialRound();
 		} else {
 			r = genTrivialSwitchRound();
 		}
-		if((rand() % 3) == 0)
+		if((rand() % 3) == 0) {
 			strrevMutation(r);
+			setTimeout(r, 20);
+		}
 	}
-	else if(gameRound <= 13) {
+	else if(gameRound <= 16) {
 		switch(rand()%3) {
 			case 0:
 			r = genTrivialRound();
@@ -368,12 +382,13 @@ GameRound* GameRoundGenerator::newRound(int gameRound) {
 			break;
 			case 2:
 			r = genTrivialMisleadingSwitchRound();
+			setTimeout(r, 20);
 			break;
 		}
 		if((rand() % 3) == 0)
 			strrevMutation(r);
 	}
-	else if(gameRound <= 19) {
+	else {
 		switch(rand()%4) {
 			case 0:
 			r = genTrivialRound();
@@ -390,6 +405,14 @@ GameRound* GameRoundGenerator::newRound(int gameRound) {
 		}
 		if((rand() % 3) == 0)
 			strrevMutation(r);
+	}
+
+	if (gameRound > 20) {
+		int timeout = 10 - (gameRound -20)/2;
+		if(timeout < 3) {
+			timeout = 3;
+		}
+		setTimeout(r, timeout);
 	}
 #endif
 

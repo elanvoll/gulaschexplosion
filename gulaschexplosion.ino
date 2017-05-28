@@ -100,6 +100,12 @@ void setup() {
     ui->open(gameUi);
   }));
 
+  mainMenu->addMenuItem(new MenuItem("About", []() {
+    NotificationScreen * about = new NotificationScreen(APP_NAME " v" APP_VERSION ,
+    "", "Developed by\nElan\n&\nTagkaffee");
+    ui->open(about);
+  })); 
+
 #ifdef DEBUG_BUILD
   mainMenu->addMenuItem(new MenuItem("Du Success", []() {
     gameUi = new GameUI(status, &badge);

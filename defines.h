@@ -20,9 +20,9 @@
 
 #define GAME_TCP_PORT 8262
 
-#define PLAYERS 2
+#define PLAYERS 3
 
-#define DEBUG_BUILD
+//#define DEBUG_BUILD
 
 #define STATE_HOST_MESSAGE "Share Game\nvia IR Sender"
 #define STATE_JOIN_MESSAGE "Revice Game\ninfo via IR\nSensor from\nHost"
