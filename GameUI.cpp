@@ -53,11 +53,10 @@ void GameUI::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint16_t o
       tft->drawLine(0, 65, _TFTWIDTH-1, 65, theme->foregroundColor);
       tft->setCursor(5, 80);
       tft->print(lastLogMessage);
-      tft->drawLine(0, 100, _TFTWIDTH-1, 100, theme->foregroundColor);
-      tft->setCursor(5, 120);
-      // char time[10];
-      // sprintf(time, "%.3f s", remainingTime / 1000.);
-      // tft->print(time);
+    } else if (statusOverlay->getGameState() == GAME_STATE_FINISH) {
+      tft->drawLine(0, 65, _TFTWIDTH-1, 65, theme->foregroundColor);
+      tft->setCursor(5, 80);
+      tft->print(finalMessage);
     }
     this->dirty = false;
 }
@@ -72,7 +71,6 @@ void setLED(uint8_t led, uint32_t values) {
   uint8_t r = (uint8_t)((values & 0x00FF0000) >> 16);
   uint8_t g = (uint8_t)((values & 0x0000FF00) >> 8);
   uint8_t b = (uint8_t)((values & 0x000000FF));
-  //Serial.printf("%d/%d/%d/%d\n", l, r, g, b);
   pixels.setPixelColor(led, pixels.Color(r, g, b));
 }
 
@@ -92,7 +90,10 @@ void GameUI::vib(uint16_t millis) {
 void GameUI::handleGameStart(ServerGameStartPacket* packet) {
   updateGameState(GAME_STATE_RUNNING);
   statusOverlay->setRound(packet->gameround);
+  round = packet->gameround;
   lastPacketMessage = String(packet->text);
+  lastLogMessage = "";
+  finalMessage = "";
   setLED(0, packet->led1);
   setLED(1, packet->led2);
   setLED(2, packet->led3);
@@ -128,10 +129,11 @@ void GameUI::doTime() {
 
 void GameUI::handleGameOver(SeverGameOver* packet) {
   updateGameState(GAME_STATE_FINISH);
+  finalMessage = "You survived\n" + String(round-1) + " rounds";
   if (packet->timeout) {
-    lastPacketMessage = "Exploded: you took to long";
+    lastPacketMessage = "Exploded:\nyou took to long";
   } else {
-    lastPacketMessage = "Exploded: wrong input";
+    lastPacketMessage = "Exploded:\nwrong input";
   }
   dirty = true;
   vib(500);

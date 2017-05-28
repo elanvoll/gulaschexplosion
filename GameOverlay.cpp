@@ -17,8 +17,6 @@ void GameOverlay::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint1
       tft->print(*sRound);
     }
     tft->setCursor(80, 7);
-//    switch(this->gameState)
-    //tft->printf("Bat: %d%%", std::max(std::min(int((bat-batCritical)/float(batFull-batCritical)*100), 100),0));
     tft->printf("Player %d", this->playerId);
     tft->drawLine(0, 11, _TFTWIDTH-1, 11, theme->foregroundColor);
     dirty = false;
