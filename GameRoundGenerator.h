@@ -22,6 +22,8 @@ struct GameRoundGenerator
 	static GameRound* newRound(int gameRound);
 	static GameRound* genTrivialRound();
 	static GameRound* genTrivialSwitchRound();
+	static GameRound* genTrivialMisleadingSwitchRound();
+	static GameRound* genLyingSwitchRound();
 	// helpers
 	static GameColor getRandomGameColor();
 	static GameColor getRandomGameColorExcept(GameColor* retricted, int len);

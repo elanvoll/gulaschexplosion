@@ -100,6 +100,7 @@ void setup() {
     ui->open(gameUi);
   }));
 
+#ifdef DEBUG_BUILD
   mainMenu->addMenuItem(new MenuItem("Du Success", []() {
     gameUi = new GameUI(status, &badge);
     ui->open(gameUi);
@@ -147,6 +148,8 @@ void setup() {
       }
       });
   }));
+
+#endif
   ui->open(mainMenu);
 }
 

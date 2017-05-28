@@ -43,7 +43,7 @@ void GameServer::handleClientInteraction(ClientActionPacket& p, uint8 userid) {
 void GameServer::doWork() {
 	WiFiClient currentClient = server.available();
 	if (currentClient && currentClient.connected())  {
-		currentClient.setNoDelay(true);
+//		currentClient.setNoDelay(true);
 		Serial.println("User joined");
 		if(serverState != GAME_SERVER_STATE_LISTEN) {
 			Serial.println("Got new player in wrong state");

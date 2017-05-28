@@ -16,6 +16,11 @@ void GameOverlay::draw(TFT_ILI9163C* tft, Theme * theme, uint16_t offsetX, uint1
       tft->setCursor(40, 7);
       tft->print(*sRound);
     }
+#ifdef DEBUG_BUILD
+else {
+    tft->print("DEBUG");
+}
+#endif
     tft->setCursor(80, 7);
     tft->printf("Player %d", this->playerId);
     tft->drawLine(0, 11, _TFTWIDTH-1, 11, theme->foregroundColor);
